@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.4 – Clear & Descriptive Links Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; line-height:1.6; }
+  header, main, footer { padding:16px; }
+  header { background:#007a33; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  label { display:block; margin-top:12px; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  a { display:block; margin:6px 0; color:#007a33; text-decoration:none; }
+  a:hover, a:focus { text-decoration:underline; outline:2px solid #007a33; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.4 – Clear & Descriptive Links Demo</h1>
+  <p>Use the dropdown below to switch between vague links (problem) and descriptive links (fix).</p>
+</header>
+
+<main>
+  <label for="link-mode"><strong>Choose Link Mode:</strong></label>
+  <select id="link-mode">
+    <option value="vague">Vague Links (Problem)</option>
+    <option value="descriptive">Descriptive Links (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Current mode demonstrates the clarity of link text for users. Tab through links or use a screen reader to test.
+  </div>
+
+  <div id="link-demo">
+    <!-- Links will be dynamically added here -->
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.4
+</footer>
+
+<script>
+const linkMode = document.getElementById('link-mode');
+const note = document.getElementById('note');
+const linkDemo = document.getElementById('link-demo');
+
+function renderLinks(mode) {
+  linkDemo.innerHTML = ''; // Clear existing links
+
+  if(mode === 'vague') {
+    note.textContent = 'Vague Links: Notice how "Click here" or "Read more" does not convey link purpose.';
+    const links = [
+      {text:'Click here', href:'report.pdf'},
+      {text:'Read more', href:'guidelines.html'},
+      {text:'Click here', href:'services.html'},
+      {text:'More info', href:'pricing.html'}
+    ];
+    links.forEach(l=>{
+      const a = document.createElement('a');
+      a.href = l.href;
+      a.textContent = l.text;
+      linkDemo.appendChild(a);
+    });
+  } else {
+    note.textContent = 'Descriptive Links: Each link text clearly explains where it leads.';
+    const links = [
+      {text:'Read our latest accessibility report (PDF)', href:'report.pdf'},
+      {text:'Check our Web Accessibility Guidelines', href:'guidelines.html'},
+      {text:'Our Services', href:'services.html'},
+      {text:'Pricing Information', href:'pricing.html'},
+      {text:'Go to User Dashboard', href:'dashboard.html', aria:'Go to User Dashboard'}
+    ];
+    links.forEach(l=>{
+      const a = document.createElement('a');
+      a.href = l.href;
+      a.textContent = l.text;
+      if(l.aria) a.setAttribute('aria-label', l.aria);
+      linkDemo.appendChild(a);
+    });
+  }
+}
+
+// Initialize default
+renderLinks(linkMode.value);
+
+linkMode.addEventListener('change', ()=>{
+  renderLinks(linkMode.value);
+});
+</script>
+
+</body>
+</html>

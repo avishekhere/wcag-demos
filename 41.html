@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 3.2.2 Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f7f7fb; color: #111; }
+  .wrap { max-width: 900px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  h1 { margin-top: 0; font-size: 24px; }
+  h2 { font-size: 20px; margin-bottom: 8px; }
+  p { margin-bottom: 12px; }
+  select, button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; margin-right: 6px; cursor: pointer; }
+  .example { border: 1px solid #ddd; padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; }
+  .note { font-size: 13px; color: #666; margin-top: 6px; }
+  .result { font-weight: 600; margin-left: 8px; }
+  .result.pass { color: #0b7a2a; }
+  .result.fail { color: #b70f0f; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WCAG 2.1 – 3.2.2: Prevent Unexpected Context Changes</h1>
+  <p class="note">Use the dropdown to toggle between unsafe (problem) and safe (fix) behaviors.</p>
+
+  <label for="context-mode"><strong>Choose Demo Mode:</strong></label>
+  <select id="context-mode">
+    <option value="unsafe">Unsafe / Problem (Context changes automatically)</option>
+    <option value="safe">Safe / Fix (User explicitly triggers context change)</option>
+  </select>
+
+  <!-- Example 1: State Selection Dropdown -->
+  <section class="example" id="example1">
+    <h2>Example 1 — State Selection Dropdown</h2>
+    <label for="stateSelect">Select Your State:</label>
+    <select id="stateSelect">
+      <option value="">--Select--</option>
+      <option value="Maharashtra">Maharashtra</option>
+      <option value="Karnataka">Karnataka</option>
+      <option value="West Bengal">West Bengal</option>
+    </select>
+    <button id="goState">Go</button>
+    <span id="result1" class="result"></span>
+    <div id="message1" style="margin-top:10px; padding:10px; border-radius:6px;">No state selected</div>
+    <p class="note" id="note1"></p>
+  </section>
+
+  <!-- Example 2: Payment Method Form -->
+  <section class="example" id="example2">
+    <h2>Example 2 — Payment Method Form</h2>
+    <form id="paymentForm">
+      <label for="paymentSelect">Select Payment Method:</label>
+      <select id="paymentSelect">
+        <option value="">--Select--</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Net Banking">Net Banking</option>
+        <option value="UPI">UPI</option>
+      </select>
+      <button type="submit" id="submitPayment">Submit</button>
+      <span id="result2" class="result"></span>
+    </form>
+    <div id="message2" style="margin-top:10px; padding:10px; border-radius:6px;">No payment method selected</div>
+    <p class="note" id="note2"></p>
+  </section>
+
+  <footer>
+    <p>Tip: Navigate using Tab/Shift+Tab/Enter. Unsafe mode demonstrates automatic context changes without user confirmation.</p>
+  </footer>
+</div>
+
+<script>
+const contextMode = document.getElementById('context-mode');
+
+// Example 1: State Dropdown
+const stateSelect = document.getElementById('stateSelect');
+const goState = document.getElementById('goState');
+const message1 = document.getElementById('message1');
+const result1 = document.getElementById('result1');
+const note1 = document.getElementById('note1');
+
+// Example 2: Payment Form
+const paymentForm = document.getElementById('paymentForm');
+const paymentSelect = document.getElementById('paymentSelect');
+const submitPayment = document.getElementById('submitPayment');
+const message2 = document.getElementById('message2');
+const result2 = document.getElementById('result2');
+const note2 = document.getElementById('note2');
+
+// Unsafe simulation functions
+function autoNavigateState() {
+  const state = stateSelect.value || 'None';
+  message1.textContent = `Page automatically loaded for: ${state}`;
+  result1.className = 'result fail';
+  result1.textContent = '⚠️ FAIL – Context changed automatically';
+}
+
+function autoSubmitPayment() {
+  const method = paymentSelect.value || 'None';
+  message2.textContent = `Payment method auto-submitted: ${method}`;
+  result2.className = 'result fail';
+  result2.textContent = '⚠️ FAIL – Form submitted automatically';
+}
+
+function setMode(mode) {
+  // Remove unsafe listeners
+  stateSelect.removeEventListener('change', autoNavigateState);
+  paymentSelect.removeEventListener('change', autoSubmitPayment);
+  goState.onclick = null;
+  paymentForm.onsubmit = null;
+
+  if(mode === 'unsafe') {
+    // Unsafe: Dropdown auto-navigate
+    stateSelect.addEventListener('change', autoNavigateState);
+    note1.textContent = "❌ Problem: Selecting a state automatically reloads the page.";
+    result1.textContent = "⚠️ FAIL – Context changes automatically";
+
+    // Unsafe: Payment auto-submit
+    paymentSelect.addEventListener('change', autoSubmitPayment);
+    note2.textContent = "❌ Problem: Changing payment method submits form automatically.";
+    result2.textContent = "⚠️ FAIL – Context changes automatically";
+  } else {
+    // Safe: State dropdown with Go button
+    goState.onclick = () => {
+      const state = stateSelect.value || 'None';
+      message1.textContent = `You selected: ${state}`;
+      result1.className = 'result pass';
+      result1.textContent = '✅ PASS – Context changes only on user action';
+      note1.textContent = "✅ Fix: User explicitly triggers page reload via 'Go' button.";
+    };
+    note1.textContent = "✅ Safe: User selects state and clicks 'Go' to change context.";
+
+    // Safe: Payment form with confirmation
+    paymentForm.onsubmit = (e) => {
+      e.preventDefault();
+      const method = paymentSelect.value || 'None';
+      if(method) {
+        const confirmAction = confirm("Changing the payment method will reload the page. Do you want to continue?");
+        if(confirmAction) {
+          message2.textContent = `Payment method submitted: ${method}`;
+          result2.className = 'result pass';
+          result2.textContent = '✅ PASS – Form submits only on user confirmation';
+          note2.textContent = "✅ Fix: User explicitly confirms submission.";
+        } else {
+          message2.textContent = "Submission canceled by user";
+          result2.textContent = '';
+          note2.textContent = "✅ Fix: User canceled the action, no context change occurred.";
+        }
+      }
+    };
+    note2.textContent = "✅ Safe: Form submission requires explicit user confirmation.";
+  }
+}
+
+// Initialize default
+contextMode.addEventListener('change', () => setMode(contextMode.value));
+contextMode.dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>

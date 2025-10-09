@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.1 — Skip Repeated Content Demo</title>
+<style>
+  body { font-family: Arial,sans-serif; margin:0; line-height:1.6; }
+  header, nav, main, aside, footer { padding:16px; }
+  header { background:#0b5cff; color:white; }
+  nav { background:#f1f1f1; }
+  aside { background:#e6e6e6; width:250px; float:left; height:600px; overflow:auto; }
+  main { margin-left:260px; padding:16px; background:#fff; min-height:600px; }
+  footer { clear:both; background:#333; color:white; text-align:center; padding:12px; }
+
+  .btn-demo {
+    background:#0b5cff; color:white; border:none; padding:10px 16px; margin:4px;
+    cursor:pointer; border-radius:6px; font-weight:bold;
+  }
+  .btn-demo:hover { background:#094bb5; }
+
+  select { padding:8px 12px; margin-right:12px; }
+
+  .sidebar ul { list-style:none; padding-left:0; }
+  .sidebar li { margin:4px 0; }
+
+  .indicator {
+    position:fixed;
+    top:10px; left:50%;
+    transform:translateX(-50%);
+    background:green;
+    color:white;
+    padding:8px 12px;
+    border-radius:6px;
+    display:none;
+    z-index:200;
+  }
+</style>
+</head>
+<body>
+
+<!-- Visual indicator -->
+<div id="indicator" class="indicator">Skipped Successfully!</div>
+
+<!-- Demo controls -->
+<div style="padding:16px; background:#eee;">
+  <label for="demo-mode"><strong>Demo Mode:</strong></label>
+  <select id="demo-mode">
+    <option value="no-skip">No Skip Link (Problem)</option>
+    <option value="with-skip">With Skip Link (Fix)</option>
+  </select>
+
+  <span id="skip-buttons" style="display:none;">
+    <button id="btn-skip-main" class="btn-demo">Skip to Main Content</button>
+    <button id="btn-skip-sidebar" class="btn-demo">Skip Sidebar</button>
+  </span>
+</div>
+
+<header role="banner">
+  <h1>Government Portal</h1>
+  <p>Welcome to the official portal</p>
+</header>
+
+<nav role="navigation">
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#">Help</a></li>
+    <li><a href="#">FAQ</a></li>
+    <li><a href="#">News</a></li>
+    <li><a href="#">Reports</a></li>
+  </ul>
+</nav>
+
+<aside class="sidebar" role="complementary">
+  <h2>News Categories</h2>
+  <ul>
+    <li><a href="#">Local News</a></li>
+    <li><a href="#">National News</a></li>
+    <li><a href="#">International News</a></li>
+    <li><a href="#">Weather</a></li>
+    <li><a href="#">Traffic</a></li>
+    <li><a href="#">Education</a></li>
+    <li><a href="#">Health</a></li>
+    <li><a href="#">Science & Tech</a></li>
+    <li><a href="#">Economy</a></li>
+    <li><a href="#">Sports</a></li>
+  </ul>
+</aside>
+
+<main role="main" id="main-content" tabindex="-1">
+  <h2>Latest Government News</h2>
+  <p id="news-articles" tabindex="-1">
+    Here are the top news articles from across the country. Users who navigate here using skip links bypass the header, menu, and sidebar.
+  </p>
+  <article>
+    <h3>Article 1: New Policy Announced</h3>
+    <p>Details about new government policies affecting citizens nationwide...</p>
+  </article>
+  <article>
+    <h3>Article 2: Public Health Advisory</h3>
+    <p>Important information on health advisories and safety guidelines...</p>
+  </article>
+  <article>
+    <h3>Article 3: Infrastructure Updates</h3>
+    <p>Updates on ongoing infrastructure projects and developments...</p>
+  </article>
+</main>
+
+<footer role="contentinfo">
+  &copy; 2025 Government Portal | Accessibility Demo
+</footer>
+
+<script>
+function showIndicator() {
+  const ind = document.getElementById('indicator');
+  ind.style.display = 'block';
+  setTimeout(()=>{ ind.style.display = 'none'; },1500);
+}
+
+// Skip to main content
+document.getElementById('btn-skip-main').addEventListener('click', function(){
+  const target = document.getElementById('main-content');
+  target.scrollIntoView({behavior:'smooth'});
+  target.focus();
+  showIndicator();
+});
+
+// Skip sidebar
+document.getElementById('btn-skip-sidebar').addEventListener('click', function(){
+  const target = document.getElementById('news-articles');
+  target.scrollIntoView({behavior:'smooth'});
+  target.focus();
+  showIndicator();
+});
+
+// Dropdown to switch demo mode
+document.getElementById('demo-mode').addEventListener('change', function(){
+  const val = this.value;
+  const skipBtns = document.getElementById('skip-buttons');
+  if(val === 'with-skip'){
+    skipBtns.style.display = 'inline';
+  } else {
+    skipBtns.style.display = 'none';
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.7 – Visible Focus Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f0f0f0; }
+  header, main, footer { padding:16px; }
+  header { background:#005a99; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#e7f3fe; padding:10px; border-left:4px solid #2196F3; margin:12px 0; }
+
+  button, a, input { margin:8px 0; padding:8px 12px; display:block; font-size:16px; }
+
+  /* Focus styles (fix) */
+  .focus-visible a:focus, 
+  .focus-visible button:focus, 
+  .focus-visible input:focus {
+    outline: 3px solid blue;
+    background-color: #ffffcc;
+  }
+
+  /* Reset focus styles (problem) */
+  .no-focus a:focus, 
+  .no-focus button:focus, 
+  .no-focus input:focus {
+    outline: none;
+    background-color: inherit;
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.7 – Visible Focus Demo</h1>
+  <p>Use the dropdown to toggle between "No Focus Indicator" and "With Focus Indicator".</p>
+</header>
+
+<main>
+  <label for="focus-mode"><strong>Choose Mode:</strong></label>
+  <select id="focus-mode">
+    <option value="no-focus">No Focus Indicator (Problem)</option>
+    <option value="focus-visible">With Focus Indicator (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Focus is not visible on interactive elements in "No Focus Indicator" mode.
+  </div>
+
+  <div id="demo-area" class="no-focus">
+    <a href="#">Home</a>
+    <a href="#">Services</a>
+    <a href="#">Contact</a>
+
+    <button>Submit</button>
+    <button>Cancel</button>
+
+    <input type="text" placeholder="Enter your name">
+    <input type="email" placeholder="Enter your email">
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.7
+</footer>
+
+<script>
+const focusMode = document.getElementById('focus-mode');
+const demoArea = document.getElementById('demo-area');
+const note = document.getElementById('note');
+
+function setFocusMode(mode) {
+  if(mode === 'no-focus') {
+    demoArea.className = 'no-focus';
+    note.textContent = 'Problem: Focus is not visible on links, buttons, or input fields.';
+  } else {
+    demoArea.className = 'focus-visible';
+    note.textContent = 'Fix: Focus is clearly visible when navigating using keyboard (Tab key).';
+  }
+}
+
+// Initialize
+setFocusMode(focusMode.value);
+
+focusMode.addEventListener('change', ()=>{
+  setFocusMode(focusMode.value);
+});
+</script>
+
+</body>
+</html>

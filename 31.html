@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.5 – Multiple Ways to Navigate Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; }
+  header, main, footer { padding:16px; }
+  header { background:#007a33; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .search-box { margin:12px 0; }
+  nav ul { list-style:none; padding:0; }
+  nav ul li { display:inline-block; margin-right:16px; }
+  nav a { color:#007a33; text-decoration:none; }
+  nav a:hover, nav a:focus { text-decoration:underline; outline:2px solid #007a33; }
+  .sitemap, .toc { background:#e9ecef; padding:12px; margin-top:12px; border-radius:6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.5 – Multiple Ways to Navigate Demo</h1>
+  <p>Use the dropdown to toggle between limited navigation (problem) and multiple navigation options (fix).</p>
+</header>
+
+<main>
+  <label for="nav-mode"><strong>Choose Navigation Mode:</strong></label>
+  <select id="nav-mode">
+    <option value="limited">Limited Navigation (Problem)</option>
+    <option value="multi">Multiple Navigation Options (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Demo highlighting the importance of multiple ways to navigate a webpage.
+  </div>
+
+  <div id="nav-demo">
+    <!-- Navigation content will be rendered here -->
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.5
+</footer>
+
+<script>
+const navMode = document.getElementById('nav-mode');
+const note = document.getElementById('note');
+const navDemo = document.getElementById('nav-demo');
+
+function renderNavigation(mode) {
+  navDemo.innerHTML = '';
+
+  if(mode === 'limited') {
+    note.textContent = 'Limited Navigation: Users can only use the top menu. No search box or sitemap is available.';
+    const nav = document.createElement('nav');
+    nav.innerHTML = `
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    `;
+    navDemo.appendChild(nav);
+  } else {
+    note.textContent = 'Multiple Navigation Options: Users can use top menu, search box, sitemap, or table of contents.';
+    
+    // Search Box
+    const search = document.createElement('div');
+    search.className = 'search-box';
+    search.innerHTML = `
+      <label for="search-input"><strong>Search:</strong></label>
+      <input type="text" id="search-input" placeholder="Search this site...">
+      <button type="button">Go</button>
+    `;
+    navDemo.appendChild(search);
+
+    // Top Menu
+    const nav = document.createElement('nav');
+    nav.innerHTML = `
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    `;
+    navDemo.appendChild(nav);
+
+    // Sitemap
+    const sitemap = document.createElement('div');
+    sitemap.className = 'sitemap';
+    sitemap.innerHTML = `
+      <h3>Site Map</h3>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Departments</a></li>
+        <li><a href="#">Policies</a></li>
+        <li><a href="#">Forms & Services</a></li>
+      </ul>
+    `;
+    navDemo.appendChild(sitemap);
+
+    // Table of Contents
+    const toc = document.createElement('div');
+    toc.className = 'toc';
+    toc.innerHTML = `
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#services">Services Overview</a></li>
+        <li><a href="#forms">Forms & Applications</a></li>
+        <li><a href="#contact">Contact Info</a></li>
+      </ul>
+    `;
+    navDemo.appendChild(toc);
+  }
+}
+
+// Initialize default
+renderNavigation(navMode.value);
+
+navMode.addEventListener('change', ()=>{
+  renderNavigation(navMode.value);
+});
+</script>
+
+</body>
+</html>

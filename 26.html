@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WCAG 2.3.1 — Avoid Rapid Flashing (Interactive Demo)</title>
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --card: #ffffff;
+    --accent: #0b5cff;
+    --danger: #b70f0f;
+    --muted: #666;
+  }
+  body {
+    font-family: "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    color: #111;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 28px auto;
+    padding: 24px;
+  }
+  h1 { margin: 0; font-size: 24px; }
+  p.lead { color: var(--muted); margin: 6px 0 20px; }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 8px 18px rgba(0,0,0,.05);
+    margin-bottom: 20px;
+  }
+  .example-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .demo-area {
+    height: 160px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  .gov-alert { background: var(--danger); color: white; }
+  .tour-banner { background: linear-gradient(90deg,#fff7e6,#ffe6f0); color: #222; }
+  .strobe-video {
+    background: linear-gradient(0deg,#0b5cff,#77a8ff);
+    color: white;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    font-weight: 700;
+  }
+
+  /* animations */
+  .flash-fast   { animation: flash-fast 0.15s steps(1) infinite; }
+  .flash-medium { animation: flash-medium 0.4s steps(1) infinite; }
+  .flash-slow   { animation: flash-slow 1s ease-in-out infinite; }
+
+  @keyframes flash-fast   { 0%{opacity:1} 50%{opacity:0} 100%{opacity:1} }
+  @keyframes flash-medium { 0%{opacity:1} 50%{opacity:0} 100%{opacity:1} }
+  @keyframes flash-slow   { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+
+  .result {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .fail { background: #ffe6e6; color: #b70f0f; border: 1px solid #ffb3b3; }
+  .pass { background: #e7f9ec; color: #137a1e; border: 1px solid #a0e6b2; }
+  select, button {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+  }
+  footer { font-size: 13px; color: var(--muted); margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>WCAG 2.3.1 — Avoid Rapid Flashing</h1>
+    <p class="lead">Demonstrating safe vs unsafe flashing and compliance outcomes.</p>
+  </header>
+
+  <!-- Example 1 -->
+  <section class="card">
+    <div class="example-title">
+      <h2>Example 1 – Government Alert Box</h2>
+      <select id="gov-mode">
+        <option value="unsafe">Unsafe: Rapid Blink (Violates)</option>
+        <option value="fade">Safe: Slow Fade (Complies)</option>
+        <option value="static">Recommended: Static Highlight (Best)</option>
+      </select>
+    </div>
+    <div id="gov-demo" class="demo-area gov-alert flash-fast">🚨 EMERGENCY ALERT: Flood Warning!</div>
+    <div id="gov-result" class="result fail">
+      ❌ Violation of WCAG 2.3.1 – Flashes > 3 times per second can trigger seizures in photosensitive users.
+    </div>
+  </section>
+
+  <!-- Example 2 -->
+  <section class="card">
+    <div class="example-title">
+      <h2>Example 2 – Tourism Banner</h2>
+      <select id="banner-speed">
+        <option value="fast">Fast (Unsafe – Violates)</option>
+        <option value="medium">Medium (Borderline)</option>
+        <option value="slow">Slow Transition (Safe)</option>
+      </select>
+    </div>
+    <div id="banner-demo" class="demo-area tour-banner flash-fast">🎉 Festival Lights – Celebrate Spring!</div>
+    <div id="banner-result" class="result fail">
+      ❌ Violation of WCAG 2.3.1 – Rapid GIF-like flashes exceed 3 Hz and cause visual stress.
+    </div>
+  </section>
+
+  <!-- Example 3 -->
+  <section class="card">
+    <div class="example-title">
+      <h2>Example 3 – Video with Strobe Effect</h2>
+      <button id="toggle-strobe">Start Strobe (Unsafe)</button>
+    </div>
+    <div id="video-sim" class="strobe-video">
+      <span>🎬 Road Safety Video Simulation</span>
+      <div id="strobe-overlay" style="position:absolute;inset:0;opacity:0;background:rgba(255,255,255,0.95)"></div>
+    </div>
+    <div id="strobe-result" class="result fail">
+      ❌ Potential Violation – Simulated strobe flashes > 3/sec. Add <strong>Epilepsy Warning</strong> and slow down fade rate to comply.
+    </div>
+  </section>
+
+  <footer>
+    <strong>Presentation Tip:</strong> Switch each dropdown live and explain why only slow or static visuals PASS WCAG 2.3.1 (Three Flashes or Below Threshold).
+  </footer>
+</div>
+
+<script>
+// === Example 1: Government Alert ===
+const govMode = document.getElementById('gov-mode');
+const govDemo = document.getElementById('gov-demo');
+const govResult = document.getElementById('gov-result');
+
+govMode.addEventListener('change', () => {
+  // reset animation
+  govDemo.style.animation = '';
+  govDemo.classList.remove('flash-fast', 'flash-slow');
+
+  if (govMode.value === 'unsafe') {
+    govDemo.classList.add('flash-fast');
+    govResult.className = 'result fail';
+    govResult.textContent =
+      '❌ Violation of WCAG 2.3.1 – Flashes more than 3 times per second.';
+  } else if (govMode.value === 'fade') {
+    govDemo.classList.add('flash-slow');
+    govResult.className = 'result pass';
+    govResult.textContent =
+      '✅ PASS – Smooth fade animation keeps flashes below threshold and is safe for photosensitive users.';
+  } else if (govMode.value === 'static') {
+    // no flashing at all
+    govDemo.classList.remove('flash-fast', 'flash-slow');
+    govDemo.style.animation = 'none';
+    govResult.className = 'result pass';
+    govResult.textContent =
+      '✅ PASS – Static highlight (no flashing) fully complies with WCAG 2.3.1.';
+  }
+});
+
+// === Example 2: Banner ===
+const bannerSpeed = document.getElementById('banner-speed');
+const bannerDemo = document.getElementById('banner-demo');
+const bannerResult = document.getElementById('banner-result');
+
+bannerSpeed.addEventListener('change', () => {
+  bannerDemo.style.animation = '';
+  bannerDemo.classList.remove('flash-fast', 'flash-medium', 'flash-slow');
+
+  if (bannerSpeed.value === 'fast') {
+    bannerDemo.classList.add('flash-fast');
+    bannerResult.className = 'result fail';
+    bannerResult.textContent =
+      '❌ Violation – Fast flashing > 3 Hz breaks WCAG 2.3.1 threshold.';
+  } else if (bannerSpeed.value === 'medium') {
+    bannerDemo.classList.add('flash-medium');
+    bannerResult.className = 'result fail';
+    bannerResult.textContent =
+      '⚠️ Borderline – Approaches 3 flashes/sec; reduce speed or use gentle fade.';
+  } else {
+    bannerDemo.classList.add('flash-slow');
+    bannerResult.className = 'result pass';
+    bannerResult.textContent =
+      '✅ PASS – Slow transition is comfortable and WCAG compliant.';
+  }
+});
+
+// === Example 3: Strobe ===
+const toggle = document.getElementById('toggle-strobe');
+const overlay = document.getElementById('strobe-overlay');
+const strobeResult = document.getElementById('strobe-result');
+let strobeTimer = null, active = false;
+
+toggle.addEventListener('click', () => {
+  if (active) {
+    clearInterval(strobeTimer);
+    overlay.style.opacity = 0;
+    active = false;
+    toggle.textContent = 'Start Strobe (Unsafe)';
+    strobeResult.className = 'result pass';
+    strobeResult.textContent =
+      '✅ PASS – No flashing active. Safe to view.';
+  } else {
+    active = true;
+    toggle.textContent = 'Stop Strobe';
+    strobeTimer = setInterval(() => {
+      overlay.style.opacity = overlay.style.opacity === '1' ? '0' : '1';
+    }, 120);
+    strobeResult.className = 'result fail';
+    strobeResult.textContent =
+      '❌ Violation – Simulated strobe flashes > 3/sec can trigger seizures. Add warning or reduce rate.';
+  }
+});
+</script>
+
+</body>
+</html>

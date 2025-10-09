@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 3.2.1 Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f7f7fb; color: #111; }
+  .wrap { max-width: 900px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  h1 { margin-top: 0; font-size: 24px; }
+  h2 { font-size: 20px; margin-bottom: 8px; }
+  p { margin-bottom: 12px; }
+  select, button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; margin-right: 6px; cursor: pointer; }
+  .example { border: 1px solid #ddd; padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; }
+  .unsafe { background: #fff1f1; border-color: #b70f0f; }
+  .safe { background: #e9f7ed; border-color: #0b7a2a; }
+  .note { font-size: 13px; color: #666; margin-top: 6px; }
+  .result { font-weight: 600; margin-left: 8px; }
+  .result.pass { color: #0b7a2a; }
+  .result.fail { color: #b70f0f; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WCAG 2.1 – 3.2.1: Prevent Unexpected Focus Changes</h1>
+  <p class="note">Use the dropdown to toggle between unsafe (problem) and safe (fix) behaviors.</p>
+
+  <label for="focus-mode"><strong>Choose Demo Mode:</strong></label>
+  <select id="focus-mode">
+    <option value="unsafe">Unsafe / Problem (Focus causes unexpected actions)</option>
+    <option value="safe">Safe / Fix (Focus does not trigger actions)</option>
+  </select>
+
+  <!-- Example 1: Dropdown Auto-Redirect -->
+  <section class="example" id="example1">
+    <h2>Example 1 — Dropdown Auto-Redirect</h2>
+    <label for="dropdown1">Choose a language:</label>
+    <select id="dropdown1">
+      <option value="">--Select--</option>
+      <option value="en">English</option>
+      <option value="fr">French</option>
+      <option value="hi">Hindi</option>
+    </select>
+    <button id="applyLang">Apply Language</button>
+    <span id="result1" class="result"></span>
+    <div id="message1" style="margin-top:10px; padding:10px; border-radius:6px;">Current language: English</div>
+    <p class="note" id="note1"></p>
+  </section>
+
+  <!-- Example 2: Tooltip Pop-Up -->
+  <section class="example" id="example2">
+    <h2>Example 2 — Tooltip Pop-Up</h2>
+    <label for="username">Username:</label>
+    <input type="text" id="username" placeholder="Enter username">
+    <button id="showHelp">Show Help</button>
+    <span id="result2" class="result"></span>
+    <div id="tooltip" style="margin-top:10px; padding:10px; border-radius:6px; display:none; background:#e9f7ed; border:1px solid #0b7a2a;">
+      Tooltip: Your username must be 6-12 characters long.
+    </div>
+    <p class="note" id="note2"></p>
+  </section>
+
+  <!-- Example 3: Form Submission -->
+  <section class="example" id="example3">
+    <h2>Example 3 — Form Submission</h2>
+    <form id="loginForm">
+      <label for="loginUsername">Username:</label>
+      <input type="text" id="loginUsername" placeholder="Username">
+      <label for="loginPassword">Password:</label>
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button type="submit" id="submitBtn">Submit</button>
+      <span id="result3" class="result"></span>
+    </form>
+    <p class="note" id="note3"></p>
+  </section>
+
+  <footer>
+    <p>Tip: Navigate using Tab/Shift+Tab/Enter. Unsafe modes demonstrate focus-triggered problems.</p>
+  </footer>
+</div>
+
+<script>
+const focusMode = document.getElementById('focus-mode');
+
+// Example 1
+const dropdown1 = document.getElementById('dropdown1');
+const applyLang = document.getElementById('applyLang');
+const message1 = document.getElementById('message1');
+const result1 = document.getElementById('result1');
+const note1 = document.getElementById('note1');
+
+// Example 2
+const usernameInput = document.getElementById('username');
+const showHelp = document.getElementById('showHelp');
+const tooltip = document.getElementById('tooltip');
+const result2 = document.getElementById('result2');
+const note2 = document.getElementById('note2');
+
+// Example 3
+const loginForm = document.getElementById('loginForm');
+const submitBtn = document.getElementById('submitBtn');
+const result3 = document.getElementById('result3');
+const note3 = document.getElementById('note3');
+
+// Unsafe simulation functions
+function autoRedirectFocus() {
+  message1.textContent = "Current language: French";
+  result1.className = 'result fail';
+  result1.textContent = '⚠️ FAIL – Focus triggered unexpected language change';
+}
+function autoShowTooltip() {
+  tooltip.style.display = 'block';
+  result2.className = 'result fail';
+  result2.textContent = '⚠️ FAIL – Tooltip shown on focus';
+}
+function autoSubmitForm() {
+  result3.className = 'result fail';
+  result3.textContent = '⚠️ FAIL – Form submitted on focus';
+}
+
+function setMode(mode) {
+  // Remove all listeners first
+  dropdown1.removeEventListener('focus', autoRedirectFocus);
+  usernameInput.removeEventListener('focus', autoShowTooltip);
+  loginForm.removeEventListener('focus', autoSubmitForm, true);
+  submitBtn.removeEventListener('focus', autoSubmitForm);
+  applyLang.onclick = null;
+  showHelp.onclick = null;
+  loginForm.onsubmit = null;
+
+  if(mode === 'unsafe') {
+    // Example 1: Dropdown auto-redirect
+    dropdown1.addEventListener('focus', autoRedirectFocus);
+    note1.textContent = "❌ Problem: Language changes automatically when dropdown gains focus.";
+    result1.textContent = "⚠️ FAIL – Focus triggers unexpected action";
+    result1.className = 'result fail';
+
+    // Example 2: Tooltip on focus
+    usernameInput.addEventListener('focus', autoShowTooltip);
+    note2.textContent = "❌ Problem: Tooltip appears automatically on field focus.";
+    result2.textContent = "⚠️ FAIL – Tooltip triggers unexpectedly";
+    result2.className = 'result fail';
+
+    // Example 3: Form submit on focus
+    loginForm.addEventListener('focus', autoSubmitForm, true);
+    submitBtn.addEventListener('focus', autoSubmitForm); // submit button triggers too
+    note3.textContent = "❌ Problem: Form submits unexpectedly when field OR Submit button gains focus.";
+    result3.textContent = "⚠️ FAIL – Form submission triggers unexpectedly";
+    result3.className = 'result fail';
+  } else {
+    // Safe behaviors
+    applyLang.onclick = () => {
+      const lang = dropdown1.value || 'English';
+      message1.textContent = `Current language: ${lang}`;
+      result1.className = 'result pass';
+      result1.textContent = '✅ PASS – Language changes only on user action';
+      note1.textContent = "✅ Fix: User explicitly applies language change.";
+    };
+
+    showHelp.onclick = () => {
+      tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+      result2.className = 'result pass';
+      result2.textContent = '✅ PASS – Tooltip displayed only on user request';
+      note2.textContent = "✅ Fix: Tooltip only appears on explicit user action.";
+    };
+
+    loginForm.onsubmit = (e) => {
+      e.preventDefault();
+      result3.className = 'result pass';
+      result3.textContent = '✅ PASS – Form submits only on button click';
+      note3.textContent = "✅ Fix: Form submission occurs only when user clicks Submit.";
+    };
+
+    note1.textContent = "✅ Safe: Language changes only on user action.";
+    note2.textContent = "✅ Safe: Tooltip only appears when user clicks help.";
+    note3.textContent = "✅ Safe: Form submits only on explicit submit click.";
+  }
+}
+
+// Initialize default
+focusMode.addEventListener('change', () => setMode(focusMode.value));
+focusMode.dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>

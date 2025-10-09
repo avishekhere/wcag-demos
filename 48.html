@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 4.1.1 Demo: Proper HTML Structure</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f2f2f7; margin: 0; padding: 20px; color: #111; }
+  .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  h1 { font-size: 24px; margin-top: 0; }
+  h2 { margin-top: 20px; font-size: 20px; }
+  select { padding: 6px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 12px; }
+  .demo-section { display: flex; gap: 20px; flex-wrap: wrap; }
+  .panel { flex: 1 1 45%; padding: 12px; background: #eef; border-radius: 6px; overflow-x: auto; }
+  .panel pre { background: #ddd; padding: 10px; border-radius: 6px; overflow-x: auto; }
+  .note { font-size: 13px; color: #666; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>WCAG 2.1 – 4.1.1: Ensure Proper HTML Structure</h1>
+
+  <label for="demo-mode"><strong>Choose Demo Mode:</strong></label>
+  <select id="demo-mode">
+    <option value="fail">Fail / Incorrect HTML</option>
+    <option value="pass">Pass / Correct HTML</option>
+  </select>
+
+  <div class="demo-section">
+    <div class="panel">
+      <h2>Rendered Output</h2>
+      <div id="render-output" style="padding:10px; background:#fff; border:1px solid #ccc; border-radius:6px;"></div>
+    </div>
+
+    <div class="panel">
+      <h2>HTML Source Code</h2>
+      <pre id="source-code"></pre>
+    </div>
+  </div>
+
+  <p class="note">Switch between Fail and Pass to see how proper HTML structure affects rendering and accessibility.</p>
+</div>
+
+<script>
+const demoMode = document.getElementById('demo-mode');
+const renderOutput = document.getElementById('render-output');
+const sourceCode = document.getElementById('source-code');
+
+const failHTML = `
+<p>This is a paragraph
+<b><i>Improper nesting</b></i>
+<ul>
+<div>Item 1 (invalid inside UL)</div>
+<li>Item 2</li>
+</ul>
+<input type="text" name="email" name="user-email">
+<div id="header"></div>
+<div id="header"></div>
+`;
+
+const passHTML = `
+<p>This is a paragraph.</p>
+<b><i>Properly nested text</i></b>
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+<input type="text" name="email">
+<div id="header"></div>
+<div id="main-header"></div>
+`;
+
+function updateDemo(mode) {
+  if(mode === 'fail') {
+    renderOutput.innerHTML = failHTML;
+    sourceCode.textContent = failHTML.trim();
+  } else {
+    renderOutput.innerHTML = passHTML;
+    sourceCode.textContent = passHTML.trim();
+  }
+}
+
+// Initialize
+demoMode.addEventListener('change', () => updateDemo(demoMode.value));
+demoMode.dispatchEvent(new Event('change'));
+</script>
+
+</body>
+</html>

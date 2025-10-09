@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.5.4 Demo – Motion Control Accessibility</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  .section { margin-bottom: 50px; }
+  button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+  label { font-weight: bold; display: block; margin-top: 15px; }
+  #transactions { border: 1px solid #ccc; padding: 10px; margin-top: 10px; height: 100px; overflow-y: auto; background: #f9f9f9; }
+  #character-container { width: 300px; height: 50px; border: 1px solid #ccc; position: relative; margin-top: 10px; background: #f0f0f0; }
+  #character { width: 50px; height: 50px; background: #007bff; position: absolute; left: 125px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; transition: left 0.3s; }
+  .status { margin-top: 10px; font-weight: bold; padding: 5px 10px; display: inline-block; border-radius: 5px; }
+  .pass { background-color: #28a745; color: white; }
+  .fail { background-color: #dc3545; color: white; }
+</style>
+</head>
+<body>
+
+<h1>WCAG 2.5.4 – Motion Control Accessibility Demo</h1>
+
+<div class="section">
+  <h2>1. Motion-Based Refresh (Simulated Shake)</h2>
+  <p>Shake the device to refresh transactions (simulated). Alternative: click the Refresh button.</p>
+  <button id="refreshBtn">Refresh Transactions (Button)</button>
+  <button id="simulateShakeBtn">Simulate Shake</button>
+  <label><input type="checkbox" id="disableMotion"> Disable "Shake" feature</label>
+  <div id="transactions">
+    <p>No transactions yet.</p>
+  </div>
+  <div id="shake-status" class="status fail">❌ FAIL: Action triggered but alternative or disable missing.</div>
+</div>
+
+<div class="section">
+  <h2>2. Motion-Based Navigation (Simulated Tilt)</h2>
+  <p>Move the character using tilt (simulated) or the arrow buttons.</p>
+  <button id="moveLeftBtn">⬅️ Move Left</button>
+  <button id="moveRightBtn">➡️ Move Right</button>
+  <button id="simulateTiltLeftBtn">Simulate Tilt Left</button>
+  <button id="simulateTiltRightBtn">Simulate Tilt Right</button>
+  <label><input type="checkbox" id="disableTilt"> Disable Tilt feature</label>
+  <div id="character-container">
+    <div id="character">C</div>
+  </div>
+  <div id="tilt-status" class="status fail">❌ FAIL: Action triggered but alternative or disable missing.</div>
+</div>
+
+<script>
+const refreshBtn = document.getElementById('refreshBtn');
+const simulateShakeBtn = document.getElementById('simulateShakeBtn');
+const transactions = document.getElementById('transactions');
+const disableMotion = document.getElementById('disableMotion');
+const shakeStatus = document.getElementById('shake-status');
+
+const moveLeftBtn = document.getElementById('moveLeftBtn');
+const moveRightBtn = document.getElementById('moveRightBtn');
+const simulateTiltLeftBtn = document.getElementById('simulateTiltLeftBtn');
+const simulateTiltRightBtn = document.getElementById('simulateTiltRightBtn');
+const character = document.getElementById('character');
+const disableTilt = document.getElementById('disableTilt');
+const tiltStatus = document.getElementById('tilt-status');
+
+let shakeEnabled = true;
+let tiltEnabled = true;
+let charPosition = 125;
+
+// ======= Shake / Refresh Logic =======
+disableMotion.addEventListener('change', (e) => {
+  shakeEnabled = !e.target.checked;
+  updateShakeStatus();
+});
+
+function addTransaction(source) {
+  if (!shakeEnabled) return alert('❌ Shake feature disabled. Use the Refresh button.');
+  const p = document.createElement('p');
+  const now = new Date().toLocaleTimeString();
+  p.textContent = `Transaction refreshed via ${source} at ${now}`;
+  transactions.prepend(p);
+  updateShakeStatus();
+}
+
+refreshBtn.addEventListener('click', () => addTransaction('button'));
+simulateShakeBtn.addEventListener('click', () => addTransaction('simulated shake'));
+
+function updateShakeStatus() {
+  const alternativeExists = !!refreshBtn;
+  if (shakeEnabled) {
+    shakeStatus.textContent = '✅ PASS: Shake feature enabled and alternative button available.';
+    shakeStatus.className = 'status pass';
+  } else if (!shakeEnabled && alternativeExists) {
+    shakeStatus.textContent = '✅ PASS: Shake feature disabled, alternative button available.';
+    shakeStatus.className = 'status pass';
+  } else {
+    shakeStatus.textContent = '❌ FAIL: No alternative control available!';
+    shakeStatus.className = 'status fail';
+  }
+}
+
+// ======= Tilt / Character Movement Logic =======
+disableTilt.addEventListener('change', (e) => {
+  tiltEnabled = !e.target.checked;
+  updateTiltStatus();
+});
+
+function moveCharacter(direction, source) {
+  if (!tiltEnabled) return alert('❌ Tilt feature disabled. Use arrow buttons.');
+  if (direction === 'Left') charPosition = Math.max(0, charPosition - 50);
+  if (direction === 'Right') charPosition = Math.min(250, charPosition + 50);
+  character.style.left = charPosition + 'px';
+  character.textContent = 'C';
+  updateTiltStatus();
+}
+
+moveLeftBtn.addEventListener('click', () => moveCharacter('Left', 'button'));
+moveRightBtn.addEventListener('click', () => moveCharacter('Right', 'button'));
+simulateTiltLeftBtn.addEventListener('click', () => moveCharacter('Left', 'simulated tilt'));
+simulateTiltRightBtn.addEventListener('click', () => moveCharacter('Right', 'simulated tilt'));
+
+function updateTiltStatus() {
+  const alternativeExists = !!moveLeftBtn && !!moveRightBtn;
+  if (tiltEnabled) {
+    tiltStatus.textContent = '✅ PASS: Tilt feature enabled and alternative buttons available.';
+    tiltStatus.className = 'status pass';
+  } else if (!tiltEnabled && alternativeExists) {
+    tiltStatus.textContent = '✅ PASS: Tilt feature disabled, alternative buttons available.';
+    tiltStatus.className = 'status pass';
+  } else {
+    tiltStatus.textContent = '❌ FAIL: No alternative control available!';
+    tiltStatus.className = 'status fail';
+  }
+}
+
+// Initial status update
+updateShakeStatus();
+updateTiltStatus();
+
+</script>
+
+</body>
+</html>

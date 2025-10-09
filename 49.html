@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessible vs Unsafe UI Demo</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f2f2f7; color: #111; margin:0; padding:0; }
+.container { max-width: 900px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+h1 { font-size: 24px; margin-top: 0; text-align:center; }
+h2 { font-size: 20px; margin-top: 20px; }
+label { display: block; margin-top: 12px; font-weight: bold; }
+.form-box { padding: 16px; border-radius: 8px; margin-top: 20px; }
+.unsafe { background: #fefefe; border: 1px solid #ccc; color:#999; }
+.safe { background: #e6f0ff; border: 1px solid #99ccff; color:#111; }
+button { padding: 10px 16px; border-radius: 6px; border: none; font-size: 16px; cursor: pointer; }
+.unsafe button { background: #ccc; color: #999; } /* poor contrast */
+.safe button { background: #0056b3; color: #fff; } /* high contrast */
+.component-box { margin-top: 16px; padding: 12px; border-radius: 6px; background: #f9f9f9; }
+.result { margin-top: 8px; font-weight: 600; }
+.result.pass { color: #0b7a2a; }
+.result.fail { color: #b70f0f; }
+.note { font-size: 13px; color: #666; margin-top: 4px; }
+.dropdown-option { padding: 4px 8px; cursor: pointer; border-radius: 4px; }
+.dropdown-option:hover, .dropdown-option:focus { background: #cce5ff; outline: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Accessible vs Unsafe UI Components Demo</h1>
+
+  <!-- Unsafe Form (Card Style) -->
+  <div class="form-box unsafe">
+    <h2>Unsafe / Fail Form</h2>
+    <p class="note">Poor contrast, no ARIA, no keyboard support.</p>
+
+    <div class="component-box">
+      <button id="unsafe-btn">Mute</button>
+      <div id="unsafe-btn-result" class="result fail">❌ ARIA missing</div>
+    </div>
+
+    <div class="component-box">
+      <div id="unsafe-checkbox" style="font-size: 20px; cursor:pointer;">☐ Subscribe</div>
+      <div id="unsafe-checkbox-result" class="result fail">❌ ARIA missing</div>
+    </div>
+
+    <div class="component-box">
+      <button id="unsafe-dropdown-btn">Select Country</button>
+      <div id="unsafe-dropdown-menu" style="display:none; margin-top:4px;">
+        <div>India</div>
+        <div>USA</div>
+        <div>UK</div>
+      </div>
+      <div id="unsafe-dropdown-result" class="result fail">❌ ARIA missing</div>
+    </div>
+  </div>
+
+  <!-- Safe Form (Inline Form Style) -->
+  <div class="form-box safe">
+    <h2>Safe / Pass Form</h2>
+    <p class="note">High contrast buttons, full ARIA, keyboard accessible dropdown & checkbox.</p>
+
+    <div class="component-box">
+      <button id="safe-btn" role="button" aria-pressed="false" aria-label="Mute Audio">Mute</button>
+      <div id="safe-btn-result" class="result pass">✅ ARIA applied</div>
+    </div>
+
+    <div class="component-box">
+      <div id="safe-checkbox" role="checkbox" tabindex="0" aria-checked="false" style="font-size: 20px; cursor:pointer;">☐ Subscribe</div>
+      <div id="safe-checkbox-result" class="result pass">✅ ARIA applied</div>
+    </div>
+
+    <!-- Safe Dropdown -->
+    <div class="component-box">
+      <label id="dropdown-label" for="safe-dropdown-btn">Select Country</label>
+      <button id="safe-dropdown-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dropdown-label" aria-activedescendant="">Select Country</button>
+      <div id="safe-dropdown-menu" role="listbox" tabindex="-1" style="display:none; margin-top:4px; border:1px solid #ccc; max-width:200px;">
+        <div role="option" id="option-india" tabindex="-1" class="dropdown-option">India</div>
+        <div role="option" id="option-usa" tabindex="-1" class="dropdown-option">USA</div>
+        <div role="option" id="option-uk" tabindex="-1" class="dropdown-option">UK</div>
+      </div>
+      <div id="dropdown-live" aria-live="polite" style="position:absolute; left:-9999px;"></div>
+      <div id="safe-dropdown-result" class="result pass">✅ ARIA applied</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// --- Unsafe Form ---
+const unsafeBtn = document.getElementById('unsafe-btn');
+unsafeBtn.onclick = () => {
+  unsafeBtn.textContent = unsafeBtn.textContent === 'Mute' ? 'Unmute' : 'Mute';
+  document.getElementById('unsafe-btn-result').textContent = '❌ Still not accessible';
+};
+
+let unsafeChecked = false;
+const unsafeCheckbox = document.getElementById('unsafe-checkbox');
+unsafeCheckbox.onclick = () => {
+  unsafeChecked = !unsafeChecked;
+  unsafeCheckbox.textContent = (unsafeChecked ? '☑ ' : '☐ ') + 'Subscribe';
+  document.getElementById('unsafe-checkbox-result').textContent = '❌ Still not accessible';
+};
+
+let unsafeExpanded = false;
+const unsafeDropdownBtn = document.getElementById('unsafe-dropdown-btn');
+const unsafeDropdownMenu = document.getElementById('unsafe-dropdown-menu');
+unsafeDropdownBtn.onclick = () => {
+  unsafeExpanded = !unsafeExpanded;
+  unsafeDropdownMenu.style.display = unsafeExpanded ? 'block' : 'none';
+  document.getElementById('unsafe-dropdown-result').textContent = '❌ Screen reader cannot detect state';
+};
+
+// --- Safe Form ---
+const safeBtn = document.getElementById('safe-btn');
+safeBtn.onclick = () => {
+  const isMuted = safeBtn.getAttribute('aria-pressed') === 'true';
+  if(isMuted){
+    safeBtn.setAttribute('aria-pressed','false');
+    safeBtn.setAttribute('aria-label','Mute Audio');
+    safeBtn.textContent = 'Mute';
+  } else {
+    safeBtn.setAttribute('aria-pressed','true');
+    safeBtn.setAttribute('aria-label','Unmute Audio');
+    safeBtn.textContent = 'Unmute';
+  }
+  document.getElementById('safe-btn-result').textContent = '✅ Accessible state updated';
+};
+
+let safeChecked = false;
+const safeCheckbox = document.getElementById('safe-checkbox');
+safeCheckbox.onclick = () => {
+  safeChecked = !safeChecked;
+  safeCheckbox.setAttribute('aria-checked', safeChecked);
+  safeCheckbox.textContent = (safeChecked ? '☑ ' : '☐ ') + 'Subscribe';
+  document.getElementById('safe-checkbox-result').textContent = '✅ Accessible checkbox state updated';
+};
+safeCheckbox.onkeydown = (e) => {
+  if(e.key === ' ' || e.key === 'Enter'){
+    e.preventDefault(); safeCheckbox.click();
+  }
+};
+
+// --- Safe Dropdown ---
+const safeDropdownBtn = document.getElementById('safe-dropdown-btn');
+const safeDropdownMenu = document.getElementById('safe-dropdown-menu');
+const safeDropdownResult = document.getElementById('safe-dropdown-result');
+const liveRegion = document.getElementById('dropdown-live');
+const dropdownOptions = safeDropdownMenu.querySelectorAll('[role="option"]');
+
+let safeExpanded = false;
+
+// Open/close dropdown
+safeDropdownBtn.onclick = () => {
+  safeExpanded = !safeExpanded;
+  safeDropdownBtn.setAttribute('aria-expanded', safeExpanded);
+  safeDropdownMenu.style.display = safeExpanded ? 'block' : 'none';
+  if (safeExpanded) {
+    dropdownOptions[0].focus();
+    safeDropdownBtn.setAttribute('aria-activedescendant', dropdownOptions[0].id);
+  } else {
+    safeDropdownBtn.setAttribute('aria-activedescendant', '');
+  }
+};
+
+// Dropdown option click & keyboard
+dropdownOptions.forEach((option, index) => {
+  option.onclick = () => {
+    safeDropdownBtn.textContent = option.textContent;
+    safeDropdownBtn.setAttribute('aria-expanded', 'false');
+    safeDropdownBtn.setAttribute('aria-activedescendant', '');
+    safeDropdownBtn.setAttribute('aria-label', 'Selected country: ' + option.textContent);
+    safeDropdownMenu.style.display = 'none';
+    liveRegion.textContent = 'Selected country: ' + option.textContent;
+    safeExpanded = false;
+    safeDropdownResult.textContent = `✅ Selected: ${option.textContent}`;
+    safeDropdownBtn.focus();
+
+    // Reset tabindex
+    dropdownOptions.forEach(o => o.setAttribute('tabindex', '-1'));
+    option.setAttribute('tabindex', '0');
+  };
+
+  option.onkeydown = (e) => {
+    if(e.key === 'Enter' || e.key === ' ') { 
+      e.preventDefault(); option.click(); 
+    }
+    if(e.key === 'ArrowDown'){ 
+      e.preventDefault(); 
+      const next = dropdownOptions[(index + 1) % dropdownOptions.length];
+      next.focus();
+      safeDropdownBtn.setAttribute('aria-activedescendant', next.id);
+    }
+    if(e.key === 'ArrowUp'){ 
+      e.preventDefault(); 
+      const prev = dropdownOptions[(index - 1 + dropdownOptions.length) % dropdownOptions.length];
+      prev.focus();
+      safeDropdownBtn.setAttribute('aria-activedescendant', prev.id);
+    }
+  };
+});
+</script>
+
+</body>
+</html>

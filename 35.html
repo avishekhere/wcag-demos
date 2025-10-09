@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.5.2 Demo – Pointer Cancellation</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  .section { margin-bottom: 40px; }
+  .item {
+    width: 100px;
+    height: 50px;
+    background: #f0f0f0;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+  }
+  .drop-target {
+    background: #d4edda;
+    border: 2px dashed #28a745;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  label { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>WCAG 2.5.2 – Prevent Accidental Pointer Actions Demo</h1>
+
+<div class="section">
+  <label for="mode-select">Choose Mode:</label>
+  <select id="mode-select">
+    <option value="unsafe">Unsafe (Immediate Action)</option>
+    <option value="safe">Safe (Cancel Option)</option>
+  </select>
+</div>
+
+<div class="section">
+  <h2>1. Button Interaction</h2>
+  <p id="button-instructions">Press the button to see action behavior.</p>
+  <button id="demo-button">Click Me</button>
+  <p id="button-result"></p>
+</div>
+
+<div class="section">
+  <h2>2. Drag Item</h2>
+  <p id="drag-instructions">Drag the item. Drop inside the green box to confirm, or release outside to cancel (if safe mode).</p>
+  <div style="display:flex; gap:40px; margin-top:10px;">
+    <div>
+      <div id="drag-item" class="item" draggable="true">Item 1</div>
+    </div>
+    <div>
+      <div id="drop-target" class="item drop-target">Drop Zone</div>
+    </div>
+  </div>
+  <p id="drag-result"></p>
+</div>
+
+<script>
+const modeSelect = document.getElementById('mode-select');
+const demoButton = document.getElementById('demo-button');
+const buttonResult = document.getElementById('button-result');
+const buttonInstructions = document.getElementById('button-instructions');
+const dragItem = document.getElementById('drag-item');
+const dropTarget = document.getElementById('drop-target');
+const dragResult = document.getElementById('drag-result');
+const dragInstructions = document.getElementById('drag-instructions');
+
+let currentMode = 'unsafe';
+let isButtonPressed = false;
+let isDragging = false;
+
+// Update mode based on dropdown
+modeSelect.addEventListener('change', (e) => {
+  currentMode = e.target.value;
+  buttonResult.textContent = '';
+  dragResult.textContent = '';
+  if(currentMode === 'unsafe') {
+    buttonInstructions.textContent = 'Button triggers action immediately (unsafe).';
+    dragInstructions.textContent = 'Dragging the item triggers action immediately (unsafe).';
+  } else {
+    buttonInstructions.textContent = 'Press and release the button to confirm action (safe).';
+    dragInstructions.textContent = 'Drag the item. Drop inside the green box to confirm, or release outside to cancel.';
+  }
+});
+
+/* ======================
+   Button Logic
+====================== */
+demoButton.addEventListener('mousedown', () => {
+  if(currentMode === 'unsafe') {
+    buttonResult.textContent = '⚠️ Action triggered immediately (unsafe).';
+  } else {
+    isButtonPressed = true;
+    buttonResult.textContent = 'Button pressed, release to confirm action...';
+  }
+});
+
+demoButton.addEventListener('mouseup', () => {
+  if(currentMode === 'safe' && isButtonPressed) {
+    buttonResult.textContent = '✅ Button action confirmed!';
+    isButtonPressed = false;
+  }
+});
+
+demoButton.addEventListener('mouseleave', () => {
+  if(currentMode === 'safe' && isButtonPressed) {
+    buttonResult.textContent = '❌ Button action cancelled.';
+    isButtonPressed = false;
+  }
+});
+
+/* ======================
+   Drag & Drop Logic
+====================== */
+dragItem.addEventListener('dragstart', (e) => {
+  e.dataTransfer.setData('text/plain', 'dragging'); // Firefox requires this
+  dragItem.style.opacity = '0.5';
+  isDragging = true;
+  if(currentMode === 'unsafe') {
+    dragResult.textContent = '⚠️ Drag action triggered immediately (unsafe).';
+  } else {
+    dragResult.textContent = 'Dragging... drop in target to confirm.';
+  }
+});
+
+dragItem.addEventListener('dragend', (e) => {
+  dragItem.style.opacity = '1';
+  
+  if(currentMode === 'safe') {
+    // If not dropped in target, cancel
+    if(isDragging) {
+      dragResult.textContent = '❌ Drag cancelled (released outside target).';
+      isDragging = false;
+    }
+  }
+  // Unsafe mode: do nothing (action already triggered)
+});
+
+dropTarget.addEventListener('dragover', (e) => {
+  e.preventDefault(); // Allow drop
+});
+
+dropTarget.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dragResult.textContent = '✅ Item successfully dropped!';
+  isDragging = false;
+});
+</script>
+
+</body>
+</html>

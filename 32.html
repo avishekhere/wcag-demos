@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.6 – Clear Headings & Labels Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; }
+  header, main, footer { padding:16px; }
+  header { background:#007a33; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .form-group { margin-bottom:12px; }
+  label { display:block; margin-bottom:4px; }
+  input { padding:6px; width:100%; max-width:300px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.6 – Clear Headings & Labels Demo</h1>
+  <p>Use the dropdown to toggle between poorly structured headings / vague labels and proper headings / descriptive labels.</p>
+</header>
+
+<main>
+  <label for="heading-mode"><strong>Choose Mode:</strong></label>
+  <select id="heading-mode">
+    <option value="poor">Poor Headings & Vague Labels</option>
+    <option value="good">Proper Headings & Descriptive Labels</option>
+  </select>
+
+  <div class="note" id="note">
+    Demo highlighting the importance of clear headings and descriptive form labels.
+  </div>
+
+  <div id="heading-demo">
+    <!-- Headings and form content will be rendered here -->
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.6
+</footer>
+
+<script>
+const headingMode = document.getElementById('heading-mode');
+const note = document.getElementById('note');
+const headingDemo = document.getElementById('heading-demo');
+
+function renderHeadings(mode) {
+  headingDemo.innerHTML = '';
+
+  if(mode === 'poor') {
+    note.textContent = 'Poor Structure: Headings are out of order and labels are vague, making navigation confusing.';
+    headingDemo.innerHTML = `
+      <h2>New Schemes</h2>
+      <h4>Application Process</h4>
+      <h3>Eligibility Criteria</h3>
+      <h5>Required Documents</h5>
+
+      <form>
+        <div class="form-group">
+          <label for="details">Enter details</label>
+          <input type="text" id="details">
+        </div>
+      </form>
+    `;
+  } else {
+    note.textContent = 'Proper Structure: Headings follow logical hierarchy and labels are descriptive, improving accessibility.';
+    headingDemo.innerHTML = `
+      <h2>New Schemes</h2>
+        <h3>Eligibility Criteria</h3>
+        <h3>Application Process</h3>
+          <h4>Required Documents</h4>
+
+      <form>
+        <div class="form-group">
+          <label for="aadhaar">Enter Aadhaar Number</label>
+          <input type="text" id="aadhaar">
+        </div>
+        <div class="form-group">
+          <label for="pan">Enter PAN Number</label>
+          <input type="text" id="pan">
+        </div>
+      </form>
+    `;
+  }
+}
+
+// Initialize default
+renderHeadings(headingMode.value);
+
+headingMode.addEventListener('change', ()=>{
+  renderHeadings(headingMode.value);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Title Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; line-height:1.6; background:#f7f7f7; }
+  header, main, footer { padding:16px; }
+  header { background:#0b5cff; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  select { padding:8px 12px; margin:8px 0; }
+  .note { background:#e0f7ff; padding:10px; border-left:4px solid #0b5cff; margin:12px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.2 – Page Title Demo</h1>
+  <p>Switch between vague and descriptive page titles using the dropdown below.</p>
+</header>
+
+<main>
+  <label for="title-mode"><strong>Choose Page Title Mode:</strong></label>
+  <select id="title-mode">
+    <option value="vague">Vague / Untitled Title (Problem)</option>
+    <option value="descriptive">Descriptive & Clear Title (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Current mode shows how screen readers and users perceive the page title. Change the dropdown to demo.
+  </div>
+
+  <h2>About This Demo</h2>
+  <p>
+    In real websites, page titles are critical for accessibility and usability. Screen readers read the page title immediately, helping visually impaired users understand the purpose of the page. 
+  </p>
+  <p>
+    Vague titles like "Health" or "Untitled Page" are confusing, while descriptive titles like "National Health Policies | Ministry of Health & Family Welfare, Government of India" are meaningful.
+  </p>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.2
+</footer>
+
+<script>
+const titleMode = document.getElementById('title-mode');
+const note = document.getElementById('note');
+
+titleMode.addEventListener('change', function() {
+  const val = this.value;
+  if(val === 'vague') {
+    document.title = "Untitled Page"; // Problem scenario
+    note.textContent = "Vague / Untitled Title is active. Screen readers may read meaningless text, confusing users. Check the browser tab.";
+  } else {
+    document.title = "National Health Policies | Ministry of Health & Family Welfare, Government of India"; // Fixed scenario
+    note.textContent = "Descriptive Title is active. Screen readers will understand the page purpose immediately, and the browser tab shows meaningful information.";
+  }
+});
+
+// Initialize default
+titleMode.dispatchEvent(new Event('change'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 3.1.1 – Page Language Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; line-height:1.6; background:#f7f7f7; }
+  header, main, footer { padding:16px; }
+  header { background:#0b5cff; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  select { padding:8px 12px; margin:8px 0; }
+  .note { background:#e0f7ff; padding:10px; border-left:4px solid #0b5cff; margin:12px 0; }
+  .content { margin-top:16px; }
+  .demo-box { background:#f1f1f1; padding:12px; border-radius:6px; margin-top:12px; display:none; }
+  .fail { border-left: 4px solid red; background:#ffe6e6; padding:8px; margin-top:8px; }
+  .pass { border-left: 4px solid green; background:#e6ffe6; padding:8px; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 3.1.1 – Default Page Language Demo</h1>
+  <p>Choose a language or failed scenario to see only the corresponding demo content.</p>
+</header>
+
+<main>
+  <label for="lang-mode"><strong>Choose Page Language / Mode:</strong></label>
+  <select id="lang-mode">
+    <option value="en">English – Correct</option>
+    <option value="hi">Hindi – Correct</option>
+    <option value="bn">Bengali – Correct</option>
+    <option value="fail-missing">Fail: Missing lang</option>
+    <option value="fail-wrong">Fail: Wrong lang</option>
+  </select>
+
+  <div class="note" id="note">
+    Current language affects screen reader pronunciation, translation tools, and accessibility.
+  </div>
+
+  <div class="content">
+    <div class="demo-box pass" id="demo-en">
+      <h3>✅ English (Correct)</h3>
+      <p>Welcome to the Government Services Portal.</p>
+    </div>
+
+    <div class="demo-box pass" id="demo-hi">
+      <h3>✅ Hindi (Correct)</h3>
+      <p>सरकारी सेवा पोर्टल में आपका स्वागत है।</p>
+    </div>
+
+    <div class="demo-box pass" id="demo-bn">
+      <h3>✅ Bengali (Correct)</h3>
+      <p>সরকারি সেবা পোর্টালে আপনাকে স্বাগতম।</p>
+    </div>
+
+    <div class="demo-box fail" id="demo-fail-missing">
+      <h3>❌ Missing lang Attribute</h3>
+      <p>No lang attribute is set. Screen readers may mispronounce all content.</p>
+    </div>
+
+    <div class="demo-box fail" id="demo-fail-wrong">
+      <h3>❌ Wrong lang Attribute</h3>
+      <p>Content is in Hindi/Bengali but lang="en" is set. Screen readers will mispronounce.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 3.1.1
+</footer>
+
+<script>
+const langMode = document.getElementById('lang-mode');
+const note = document.getElementById('note');
+
+// List of demo IDs mapped to dropdown values
+const demos = {
+  'en': 'demo-en',
+  'hi': 'demo-hi',
+  'bn': 'demo-bn',
+  'fail-missing': 'demo-fail-missing',
+  'fail-wrong': 'demo-fail-wrong'
+};
+
+langMode.addEventListener('change', function() {
+  const selected = this.value;
+
+  // Hide all demo boxes
+  Object.values(demos).forEach(id => document.getElementById(id).style.display = 'none');
+
+  // Show the selected demo
+  document.getElementById(demos[selected]).style.display = 'block';
+
+  // Set lang attribute and update note
+  switch(selected) {
+    case 'en':
+      document.documentElement.lang = 'en';
+      note.textContent = 'Language set to English (lang="en"). Screen readers will pronounce English correctly.';
+      break;
+    case 'hi':
+      document.documentElement.lang = 'hi';
+      note.textContent = 'Language set to Hindi (lang="hi"). Screen readers will pronounce Hindi correctly.';
+      break;
+    case 'bn':
+      document.documentElement.lang = 'bn';
+      note.textContent = 'Language set to Bengali (lang="bn"). Screen readers will pronounce Bengali correctly.';
+      break;
+    case 'fail-missing':
+      document.documentElement.removeAttribute('lang');
+      note.textContent = '⚠️ Missing lang attribute. Accessibility fails.';
+      break;
+    case 'fail-wrong':
+      document.documentElement.lang = 'en'; // intentionally wrong
+      note.textContent = '⚠️ Wrong lang attribute. Accessibility fails.';
+      break;
+  }
+});
+
+// Initialize default
+langMode.dispatchEvent(new Event('change'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus Order Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; line-height:1.6; }
+  header, main, footer { padding:16px; }
+  header { background:#0b5cff; color:white; }
+  main { background:white; margin:16px; padding:16px; border-radius:8px; }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+
+  label { display:block; margin-top:12px; }
+  input, button { margin:6px 0; padding:6px 10px; border-radius:4px; border:1px solid #ccc; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .nav-bar { margin:12px 0; }
+  .nav-bar button { margin-right:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.3 – Logical Focus Order Demo</h1>
+  <p>Switch between “Incorrect Tab Order” and “Correct Tab Order” using the dropdown to experience the problem vs. fix.</p>
+</header>
+
+<main>
+  <label for="focus-mode"><strong>Choose Focus Mode:</strong></label>
+  <select id="focus-mode">
+    <option value="incorrect">Incorrect Tab Order (Problem)</option>
+    <option value="correct">Correct Logical Tab Order (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Current mode demonstrates the focus behavior. Use Tab key to navigate through the elements below.
+  </div>
+
+  <h2>Example Form</h2>
+  <form id="demo-form">
+    <!-- Elements will be dynamically rearranged based on mode -->
+  </form>
+
+  <h2>Navigation Menu</h2>
+  <div class="nav-bar" id="nav-bar">
+    <!-- Buttons will be dynamically rearranged based on mode -->
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.3
+</footer>
+
+<script>
+const focusMode = document.getElementById('focus-mode');
+const note = document.getElementById('note');
+const demoForm = document.getElementById('demo-form');
+const navBar = document.getElementById('nav-bar');
+
+function renderDemo(mode) {
+  // Clear existing content
+  demoForm.innerHTML = '';
+  navBar.innerHTML = '';
+
+  if(mode === 'incorrect') {
+    note.textContent = 'Incorrect Tab Order: Press Tab and notice the focus jumps unpredictably.';
+    // Form fields in wrong order
+    demoForm.appendChild(createInput('phone', 'Phone', '3'));
+    demoForm.appendChild(createInput('name', 'Name', '1'));
+    demoForm.appendChild(createInput('address', 'Address', '2'));
+
+    // Nav buttons in wrong order
+    navBar.appendChild(createNavButton('Contact', 3));
+    navBar.appendChild(createNavButton('Home', 1));
+    navBar.appendChild(createNavButton('About Us', 2));
+    navBar.appendChild(createNavButton('Services', 4));
+  } else {
+    note.textContent = 'Correct Logical Tab Order: Press Tab and focus follows a predictable sequence.';
+    // Form fields in correct order
+    demoForm.appendChild(createInput('name', 'Name'));
+    demoForm.appendChild(createInput('address', 'Address'));
+    demoForm.appendChild(createInput('phone', 'Phone'));
+
+    // Nav buttons in correct order
+    navBar.appendChild(createNavButton('Home'));
+    navBar.appendChild(createNavButton('About Us'));
+    navBar.appendChild(createNavButton('Services'));
+    navBar.appendChild(createNavButton('Contact'));
+  }
+}
+
+function createInput(name, label, tabindex=null) {
+  const wrapper = document.createElement('div');
+  const lab = document.createElement('label');
+  lab.setAttribute('for', name);
+  lab.textContent = label;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.name = name;
+  input.id = name;
+  if(tabindex) input.tabIndex = tabindex;
+  wrapper.appendChild(lab);
+  wrapper.appendChild(input);
+  return wrapper;
+}
+
+function createNavButton(label, tabindex=null) {
+  const btn = document.createElement('button');
+  btn.textContent = label;
+  if(tabindex) btn.tabIndex = tabindex;
+  btn.addEventListener('click', e => { e.preventDefault(); alert(`You clicked ${label}`); });
+  return btn;
+}
+
+// Initialize default
+renderDemo(focusMode.value);
+
+focusMode.addEventListener('change', ()=>{
+  renderDemo(focusMode.value);
+});
+</script>
+
+</body>
+</html>

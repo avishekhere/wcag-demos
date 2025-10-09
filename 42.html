@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 3.2.3 Consistent Navigation Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height:1.6; margin:0; padding:0; background:#f7f7fb; color:#111; }
+  .wrap { max-width: 900px; margin:30px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.08); }
+  h1 { margin-top:0; font-size:24px; }
+  h2 { font-size:20px; margin-bottom:8px; }
+  p { margin-bottom:12px; }
+  select, button { padding:6px 10px; border-radius:6px; border:1px solid #ccc; margin-right:6px; cursor:pointer; }
+  .nav { display:flex; gap:12px; margin-bottom:12px; padding:10px; background:#e0f4ff; border-radius:6px; }
+  .sidebar { margin-top:12px; padding:10px; background:#f0f0f0; border-radius:6px; }
+  .page { display:none; }
+  .page.active { display:block; }
+  .result { font-weight:600; margin-left:8px; }
+  .result.pass { color:#0b7a2a; }
+  .result.fail { color:#b70f0f; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>WCAG 2.1 – 3.2.3: Consistent Navigation Demo</h1>
+  <p>Use the dropdown to toggle between <strong>Unsafe / Problem</strong> and <strong>Safe / Fix</strong> navigation. Switch pages to test menu consistency.</p>
+
+  <label for="nav-mode"><strong>Choose Mode:</strong></label>
+  <select id="nav-mode">
+    <option value="unsafe">Unsafe / Problem</option>
+    <option value="safe">Safe / Fix</option>
+  </select>
+
+  <label for="page-select"><strong>Select Page:</strong></label>
+  <select id="page-select">
+    <option value="page1">Page 1</option>
+    <option value="page2">Page 2</option>
+    <option value="page3">Page 3</option>
+  </select>
+
+  <!-- Navigation Menu -->
+  <div id="main-nav" class="nav"></div>
+  <span id="nav-result" class="result"></span>
+
+  <!-- Sidebar Menu -->
+  <div id="sidebar" class="sidebar"></div>
+
+  <!-- Pages -->
+  <div id="page1" class="page active">
+    <h2>Page 1 Content</h2>
+    <p>This is page 1. Navigation menus should remain consistent.</p>
+  </div>
+  <div id="page2" class="page">
+    <h2>Page 2 Content</h2>
+    <p>This is page 2. Check if navigation order is consistent with other pages.</p>
+  </div>
+  <div id="page3" class="page">
+    <h2>Page 3 Content</h2>
+    <p>This is page 3. Consistent navigation helps users find content easily.</p>
+  </div>
+</div>
+
+<script>
+const navMode = document.getElementById('nav-mode');
+const pageSelect = document.getElementById('page-select');
+const mainNav = document.getElementById('main-nav');
+const sidebar = document.getElementById('sidebar');
+const navResult = document.getElementById('nav-result');
+
+const pages = document.querySelectorAll('.page');
+
+// Define menus for safe and unsafe modes
+const safeMenus = {
+  main: ['Home', 'Services', 'About Us', 'Contact'],
+  sidebar: ['Dashboard', 'Settings', 'Profile']
+};
+
+const unsafeMenus = {
+  page1: { main: ['Services','Home','About Us','Contact'], sidebar: ['Settings','Dashboard','Profile'] },
+  page2: { main: ['About Us','Contact','Home','Services'], sidebar: ['Profile','Dashboard','Settings'] },
+  page3: { main: ['Contact','Home','Services','About Us'], sidebar: ['Dashboard','Profile','Settings'] }
+};
+
+// Function to render menus based on mode and page
+function renderMenus() {
+  const mode = navMode.value;
+  const page = pageSelect.value;
+
+  if(mode === 'safe') {
+    mainNav.textContent = '';
+    sidebar.textContent = '';
+    safeMenus.main.forEach(item => {
+      const btn = document.createElement('button');
+      btn.textContent = item;
+      mainNav.appendChild(btn);
+    });
+    safeMenus.sidebar.forEach(item => {
+      const btn = document.createElement('button');
+      btn.textContent = item;
+      sidebar.appendChild(btn);
+    });
+    navResult.className = 'result pass';
+    navResult.textContent = '✅ PASS – Navigation order consistent across pages';
+  } else {
+    mainNav.textContent = '';
+    sidebar.textContent = '';
+    unsafeMenus[page].main.forEach(item => {
+      const btn = document.createElement('button');
+      btn.textContent = item;
+      mainNav.appendChild(btn);
+    });
+    unsafeMenus[page].sidebar.forEach(item => {
+      const btn = document.createElement('button');
+      btn.textContent = item;
+      sidebar.appendChild(btn);
+    });
+    navResult.className = 'result fail';
+    navResult.textContent = '⚠️ FAIL – Navigation order inconsistent on this page';
+  }
+}
+
+// Function to switch pages
+pageSelect.addEventListener('change', () => {
+  pages.forEach(p => p.classList.remove('active'));
+  document.getElementById(pageSelect.value).classList.add('active');
+  renderMenus();
+});
+
+// Update menus when mode changes
+navMode.addEventListener('change', renderMenus);
+
+// Initialize
+renderMenus();
+</script>
+</body>
+</html>
