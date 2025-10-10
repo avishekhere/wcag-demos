@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.5.1 – Single-Touch Gesture Demo</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f0f0f0;
+  }
+
+  header, main, footer {
+    padding: 16px;
+  }
+
+  header {
+    background: #005a99;
+    color: white;
+  }
+
+  main {
+    background: white;
+    margin: 16px;
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 12px;
+  }
+
+  select {
+    padding: 6px 10px;
+    margin: 8px 0;
+  }
+
+  .note {
+    background: #e7f3fe;
+    padding: 10px;
+    border-left: 4px solid #2196F3;
+    margin: 12px 0;
+  }
+
+  .demo-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .problem button, .fix button {
+    padding: 8px 12px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .fix input[type="number"] {
+    width: 80px;
+    text-align: center;
+  }
+
+  button {
+    border: none;
+    border-radius: 4px;
+    background-color: #0078d7;
+    color: white;
+    transition: background 0.2s;
+  }
+
+  button:hover {
+    background-color: #005a99;
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.5.1 – Single-Touch Gesture Demo</h1>
+  <p>Use the dropdown to toggle between "Gesture Only" (Problem) and "Single-Tap Alternative" (Fix).</p>
+</header>
+
+<main>
+  <label for="gesture-mode"><strong>Choose Mode:</strong></label>
+  <select id="gesture-mode">
+    <option value="problem">Gesture Only (Problem)</option>
+    <option value="fix">Single-Tap Alternative (Fix)</option>
+  </select>
+
+  <div class="note" id="note">
+    Problem: Actions rely solely on gestures like pinch, swipe, or drag.
+  </div>
+
+  <!-- Problem Demo -->
+  <div id="demo-area" class="problem demo-area">
+    <p><strong>Pinch to Zoom:</strong> Use two fingers to zoom in/out. (No buttons provided)</p>
+    <div style="width:100px; height:100px; background:#2196F3; color:white; display:flex; align-items:center; justify-content:center;">Zoom Box</div>
+
+    <p><strong>Swipe to Delete:</strong> Swipe left to delete the document. (No button provided)</p>
+    <div style="width:200px; padding:8px; border:1px solid #333;">Document 1</div>
+
+    <p><strong>Drag Slider:</strong> Drag the slider to set the time. (No alternative)</p>
+    <input type="range" min="0" max="24">
+  </div>
+
+  <!-- Fix Demo -->
+  <div id="demo-area-fix" class="fix demo-area" style="display:none;">
+    <p><strong>Zoom Control:</strong> Click buttons instead of pinch:</p>
+    <div style="display:flex; gap:8px;">
+      <button onclick="alert('Zoomed In')">Zoom In (+)</button>
+      <button onclick="alert('Zoomed Out')">Zoom Out (-)</button>
+    </div>
+
+    <p><strong>Delete Document:</strong> Tap button instead of swipe:</p>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span>Document 1</span>
+      <button onclick="alert('Document Deleted')">Delete</button>
+    </div>
+
+    <p><strong>Set Time:</strong> Use input box or arrow buttons instead of dragging:</p>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <input id="timeInput" type="number" min="0" max="24" value="12" aria-label="Set time in hours">
+      <button onclick="changeValue(1)">Increase</button>
+      <button onclick="changeValue(-1)">Decrease</button>
+    </div>
+    <p id="timeValue" aria-live="polite">Current Time: 12 hrs</p>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.5.1
+</footer>
+
+<script>
+const gestureMode = document.getElementById('gesture-mode');
+const problemArea = document.getElementById('demo-area');
+const fixArea = document.getElementById('demo-area-fix');
+const note = document.getElementById('note');
+
+function setGestureMode(mode) {
+  if (mode === 'problem') {
+    problemArea.style.display = 'flex';
+    fixArea.style.display = 'none';
+    note.textContent = 'Problem: Actions rely solely on gestures like pinch, swipe, or drag.';
+  } else {
+    problemArea.style.display = 'none';
+    fixArea.style.display = 'flex';
+    note.textContent = 'Fix: Single-tap or button alternatives allow all actions without complex gestures.';
+  }
+}
+
+// Initialize
+setGestureMode(gestureMode.value);
+gestureMode.addEventListener('change', () => {
+  setGestureMode(gestureMode.value);
+});
+
+// Accessible value change logic
+const timeInput = document.getElementById('timeInput');
+const timeValue = document.getElementById('timeValue');
+
+function changeValue(step) {
+  let newVal = parseInt(timeInput.value) + step;
+  if (newVal < 0) newVal = 0;
+  if (newVal > 24) newVal = 24;
+  timeInput.value = newVal;
+  timeValue.textContent = `Current Time: ${newVal} hrs`;
+}
+</script>
+
+</body>
+</html>
