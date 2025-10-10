@@ -231,6 +231,8 @@ safeBtn.onclick = () => {
 // Safe Custom Checkbox
 const safeCheckbox = document.getElementById('safe-checkbox');
 let safeChecked = safeCheckbox.getAttribute('aria-checked') === 'true';
+// IMPORTANT: Get the live region reference from the dropdown section for cross-component announcement
+const liveRegion = document.getElementById('dropdown-live'); 
 
 safeCheckbox.onclick = () => {
   safeChecked = !safeChecked;
@@ -238,6 +240,10 @@ safeCheckbox.onclick = () => {
   safeCheckbox.setAttribute('aria-checked', safeChecked);
   safeCheckbox.textContent = (safeChecked ? '☑ ' : '☐ ') + 'Subscribe';
   document.getElementById('safe-checkbox-result').textContent = `✅ Accessible checkbox state updated to ${safeChecked}`;
+  
+  // ADDITION: Explicit announcement using the aria-live region for better feedback
+  const message = safeChecked ? 'Subscription successful. Checkbox checked.' : 'Subscription cancelled. Checkbox unchecked.';
+  liveRegion.textContent = message;
 };
 
 // Add keyboard handler for compliance
@@ -252,7 +258,6 @@ safeCheckbox.onkeydown = (e) => {
 const safeDropdownBtn = document.getElementById('safe-dropdown-btn');
 const safeDropdownMenu = document.getElementById('safe-dropdown-menu');
 const safeDropdownResult = document.getElementById('safe-dropdown-result');
-const liveRegion = document.getElementById('dropdown-live');
 const dropdownOptions = safeDropdownMenu.querySelectorAll('[role="option"]');
 
 let safeExpanded = false;
