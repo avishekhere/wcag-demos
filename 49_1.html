@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessible vs Unsafe UI Demo (Corrected)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Base Styles */
+  body { 
+    font-family: 'Inter', Arial, sans-serif; 
+    background: #f8fafc; /* Tailwind gray-50 */
+    color: #1f2937; /* Tailwind gray-800 */
+    margin: 0; 
+    padding: 0; 
+  }
+  .container { 
+    max-width: 900px; 
+    margin: 30px auto; 
+    padding: 30px; 
+    background: #ffffff; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+  }
+  h1 { 
+    font-size: 28px; 
+    margin-bottom: 20px; 
+    text-align: center; 
+    font-weight: 700;
+  }
+  h2 { 
+    font-size: 22px; 
+    margin-top: 0; 
+    font-weight: 600; 
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+  }
+  button { 
+    padding: 10px 16px; 
+    border-radius: 8px; 
+    border: none; 
+    font-size: 16px; 
+    cursor: pointer; 
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  .component-box { 
+    margin-top: 20px; 
+    padding: 16px; 
+    border-radius: 8px; 
+    background: #f4f4f5; /* Tailwind gray-100 */
+  }
+  .result { 
+    margin-top: 8px; 
+    font-weight: 700; 
+    font-size: 14px;
+  }
+  .result.pass { color: #059669; /* Tailwind emerald-600 */ }
+  .result.fail { color: #dc2626; /* Tailwind red-600 */ }
+  .note { 
+    font-size: 14px; 
+    color: #4b5563; /* Tailwind gray-600 */ 
+    margin-top: 4px; 
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  /* Unsafe Section Styling */
+  .unsafe { 
+    border: 2px solid #fca5a5; /* Tailwind red-300 */ 
+    margin-bottom: 30px;
+  }
+  .unsafe h2 { border-bottom-color: #fca5a5; }
+  .unsafe button { 
+    background: #fecaca; /* Tailwind red-200 */ 
+    color: #991b1b; /* Tailwind red-800 */ 
+  }
+
+  /* Safe Section Styling */
+  .safe { 
+    border: 2px solid #a7f3d0; /* Tailwind emerald-300 */ 
+  }
+  .safe h2 { border-bottom-color: #a7f3d0; }
+  .safe button { 
+    background: #10b981; /* Tailwind emerald-500 */ 
+    color: #ffffff; 
+  }
+  .safe button:hover { background: #059669; }
+  .safe button:focus { outline: 3px solid #6ee7b7; outline-offset: 2px; }
+
+  /* Dropdown specific styles */
+  .dropdown-option { 
+    padding: 8px 12px; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    margin: 4px 0;
+  }
+  .dropdown-option:hover { background: #d1fae5; /* Tailwind green-100 */ }
+  /* Visually indicate focus for keyboard users */
+  .dropdown-option[tabindex="0"]:focus, 
+  .dropdown-option[aria-selected="true"] { 
+    background: #6ee7b7; /* Tailwind emerald-300 */ 
+    outline: none; 
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="container rounded-xl shadow-2xl">
+  <h1>WCAG 4.1.2: Name, Role, Value Demo</h1>
+
+  <!-- Unsafe Form -->
+  <div class="form-box unsafe rounded-xl p-6">
+    <h2>Unsafe / Fail Form</h2>
+    <p class="note">These custom controls fail because they lack ARIA roles and state attributes, making them unusable for assistive technologies (AT).</p>
+
+    <!-- Unsafe Toggle Button -->
+    <div class="component-box">
+      <button id="unsafe-btn">Mute</button>
+      <div id="unsafe-btn-result" class="result fail">❌ No `aria-pressed` state available to AT.</div>
+    </div>
+
+    <!-- Unsafe Custom Checkbox -->
+    <div class="component-box">
+      <!-- Lacks role="checkbox", tabindex="0", and aria-checked -->
+      <div id="unsafe-checkbox" class="text-xl cursor-pointer">☐ Subscribe</div>
+      <div id="unsafe-checkbox-result" class="result fail">❌ Role and state are missing. Not keyboard accessible.</div>
+    </div>
+
+    <!-- Unsafe Dropdown -->
+    <div class="component-box">
+      <button id="unsafe-dropdown-btn">Select Country</button>
+      <div id="unsafe-dropdown-menu" class="hidden mt-2 p-2 border border-gray-300 rounded-md bg-white max-w-xs">
+        <!-- Lacks role="listbox", role="option", and keyboard navigation -->
+        <div class="dropdown-option">India</div>
+        <div class="dropdown-option">USA</div>
+        <div class="dropdown-option">UK</div>
+      </div>
+      <div id="unsafe-dropdown-result" class="result fail">❌ AT cannot determine button state (`aria-expanded`) or list structure.</div>
+    </div>
+  </div>
+
+  <!-- Safe Form -->
+  <div class="form-box safe rounded-xl p-6">
+    <h2>Safe / Pass Form (WCAG 4.1.2 Compliant)</h2>
+    <p class="note">These controls use **ARIA** to provide the **Name**, **Role**, and **Value** to assistive technologies, making them fully accessible and controllable.</p>
+
+    <!-- Safe Toggle Button -->
+    <div class="component-box">
+      <!-- Inherits role="button". Uses aria-pressed for state and aria-label for clear name. -->
+      <button id="safe-btn" aria-pressed="false" aria-label="Mute Audio">Mute</button>
+      <div id="safe-btn-result" class="result pass">✅ Uses `aria-pressed` and dynamic `aria-label`.</div>
+    </div>
+
+    <!-- Safe Custom Checkbox -->
+    <div class="component-box">
+      <!-- Uses role="checkbox", tabindex="0" (keyboard focus), and aria-checked for state. -->
+      <div id="safe-checkbox" role="checkbox" tabindex="0" aria-checked="false" class="text-xl cursor-pointer inline-block p-1 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">☐ Subscribe</div>
+      <div id="safe-checkbox-result" class="result pass">✅ Uses `role="checkbox"`, `tabindex="0"`, and `aria-checked`.</div>
+    </div>
+
+    <!-- Safe Dropdown (Listbox Pattern) - CORRECTION APPLIED HERE -->
+    <div class="component-box">
+      <label id="dropdown-label" class="block mb-2 text-sm font-medium">Select Country</label>
+      <!-- Uses aria-haspopup, aria-expanded for state, and aria-activedescendant for virtual focus -->
+      <button id="safe-dropdown-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dropdown-label safe-dropdown-btn" aria-activedescendant="" class="safe-button">Select Country</button>
+      
+      <!-- role="listbox" is the container. tabindex="-1" prevents the menu itself from being focusable. -->
+      <div id="safe-dropdown-menu" role="listbox" tabindex="-1" class="hidden mt-2 p-2 border border-gray-300 rounded-lg bg-white shadow-md max-w-xs focus:outline-none">
+        <!-- Each option has role="option" and CORRECTLY uses aria-selected for its value/state -->
+        <div role="option" id="option-india" tabindex="-1" aria-selected="false" class="dropdown-option">India</div>
+        <div role="option" id="option-usa" tabindex="-1" aria-selected="false" class="dropdown-option">USA</div>
+        <div role="option" id="option-uk" tabindex="-1" aria-selected="false" class="dropdown-option">UK</div>
+      </div>
+      
+      <!-- Aria-live region for critical state announcements (e.g., selection confirmation) -->
+      <div id="dropdown-live" aria-live="polite" class="absolute -left-96 h-1 w-1 overflow-hidden"></div>
+      
+      <div id="safe-dropdown-result" class="result pass">✅ Uses `aria-expanded`, `role="listbox"`, `role="option"`, and **`aria-selected`**.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// --- Unsafe Form Logic (Purposefully inaccessible) ---
+const unsafeBtn = document.getElementById('unsafe-btn');
+unsafeBtn.onclick = () => {
+  unsafeBtn.textContent = unsafeBtn.textContent === 'Mute' ? 'Unmute' : 'Mute';
+  document.getElementById('unsafe-btn-result').textContent = '❌ State changed visually but not programmatically (ARIA)';
+};
+
+let unsafeChecked = false;
+const unsafeCheckbox = document.getElementById('unsafe-checkbox');
+unsafeCheckbox.onclick = () => {
+  unsafeChecked = !unsafeChecked;
+  unsafeCheckbox.textContent = (unsafeChecked ? '☑ ' : '☐ ') + 'Subscribe';
+  document.getElementById('unsafe-checkbox-result').textContent = '❌ State changed visually but not programmatically (ARIA)';
+};
+
+let unsafeExpanded = false;
+const unsafeDropdownBtn = document.getElementById('unsafe-dropdown-btn');
+const unsafeDropdownMenu = document.getElementById('unsafe-dropdown-menu');
+unsafeDropdownBtn.onclick = () => {
+  unsafeExpanded = !unsafeExpanded;
+  unsafeDropdownMenu.style.display = unsafeExpanded ? 'block' : 'none';
+  document.getElementById('unsafe-dropdown-result').textContent = '❌ Screen reader cannot detect state change or list structure';
+};
+
+// --- Safe Form Logic (WCAG 4.1.2 Compliant) ---
+
+// Safe Toggle Button
+const safeBtn = document.getElementById('safe-btn');
+safeBtn.onclick = () => {
+  const isMuted = safeBtn.getAttribute('aria-pressed') === 'true';
+  if (isMuted) {
+    // Unmute
+    safeBtn.setAttribute('aria-pressed', 'false');
+    safeBtn.setAttribute('aria-label', 'Mute Audio');
+    safeBtn.textContent = 'Mute';
+  } else {
+    // Mute
+    safeBtn.setAttribute('aria-pressed', 'true');
+    safeBtn.setAttribute('aria-label', 'Unmute Audio');
+    safeBtn.textContent = 'Unmute';
+  }
+  document.getElementById('safe-btn-result').textContent = '✅ Accessible state and name updated';
+};
+
+// Safe Custom Checkbox
+const safeCheckbox = document.getElementById('safe-checkbox');
+let safeChecked = safeCheckbox.getAttribute('aria-checked') === 'true';
+
+safeCheckbox.onclick = () => {
+  safeChecked = !safeChecked;
+  // Update Role (checkbox) State (aria-checked) and Value (text)
+  safeCheckbox.setAttribute('aria-checked', safeChecked);
+  safeCheckbox.textContent = (safeChecked ? '☑ ' : '☐ ') + 'Subscribe';
+  document.getElementById('safe-checkbox-result').textContent = `✅ Accessible checkbox state updated to ${safeChecked}`;
+};
+
+// Add keyboard handler for compliance
+safeCheckbox.onkeydown = (e) => {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault(); 
+    safeCheckbox.click();
+  }
+};
+
+// --- Safe Dropdown (Listbox) ---
+const safeDropdownBtn = document.getElementById('safe-dropdown-btn');
+const safeDropdownMenu = document.getElementById('safe-dropdown-menu');
+const safeDropdownResult = document.getElementById('safe-dropdown-result');
+const liveRegion = document.getElementById('dropdown-live');
+const dropdownOptions = safeDropdownMenu.querySelectorAll('[role="option"]');
+
+let safeExpanded = false;
+
+// Function to handle opening/closing
+safeDropdownBtn.onclick = () => {
+  safeExpanded = !safeExpanded;
+  safeDropdownBtn.setAttribute('aria-expanded', safeExpanded);
+  safeDropdownMenu.style.display = safeExpanded ? 'block' : 'none';
+
+  if (safeExpanded) {
+    // Find the currently selected or the first option to focus
+    let firstOptionToFocus = safeDropdownMenu.querySelector('[aria-selected="true"]') || dropdownOptions[0];
+    firstOptionToFocus.focus();
+    safeDropdownBtn.setAttribute('aria-activedescendant', firstOptionToFocus.id);
+  } else {
+    safeDropdownBtn.setAttribute('aria-activedescendant', '');
+  }
+};
+
+// Dropdown option click & keyboard handler
+dropdownOptions.forEach((option, index) => {
+  // Click handler (Selection)
+  option.onclick = () => {
+    // 1. Reset all options' state and focusability
+    dropdownOptions.forEach(o => {
+        o.setAttribute('aria-selected', 'false'); // Clear selection state
+        o.setAttribute('tabindex', '-1');        // Make non-focusable
+    });
+
+    // 2. Set the current option's state and focusability
+    option.setAttribute('aria-selected', 'true');
+    option.setAttribute('tabindex', '0'); // Keep the selected item focusable
+    
+    // 3. Update Button (Name, State, Value)
+    safeDropdownBtn.textContent = option.textContent; // Updates the button's visible value/name
+    safeDropdownBtn.setAttribute('aria-expanded', 'false');
+    safeDropdownBtn.setAttribute('aria-activedescendant', ''); // Clear active descendant
+    safeDropdownBtn.setAttribute('aria-label', `Selected country: ${option.textContent}, currently closed.`); 
+
+    // 4. Close and Announce
+    safeDropdownMenu.style.display = 'none';
+    liveRegion.textContent = `Selected country: ${option.textContent} is selected.`;
+    safeExpanded = false;
+    safeDropdownResult.textContent = `✅ Selected: ${option.textContent} (ARIA-selected updated)`;
+    safeDropdownBtn.focus(); // Return focus to the controlling button
+  };
+
+  // Keyboard Navigation Handler (Focus/Activation)
+  option.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { 
+      e.preventDefault(); 
+      option.click(); // Activate the click handler for selection
+    }
+    
+    // Handle Arrow Down
+    if (e.key === 'ArrowDown') { 
+      e.preventDefault(); 
+      const next = dropdownOptions[(index + 1) % dropdownOptions.length];
+      next.focus();
+      safeDropdownBtn.setAttribute('aria-activedescendant', next.id);
+    }
+    
+    // Handle Arrow Up
+    if (e.key === 'ArrowUp') { 
+      e.preventDefault(); 
+      const prev = dropdownOptions[(index - 1 + dropdownOptions.length) % dropdownOptions.length];
+      prev.focus();
+      safeDropdownBtn.setAttribute('aria-activedescendant', prev.id);
+    }
+    
+    // Handle Escape (Close menu and return focus)
+    if (e.key === 'Escape') {
+        safeExpanded = true; // Set to true so the button.onclick toggle works
+        safeDropdownBtn.click();
+    }
+  };
+});
+</script>
+
+</body>
+</html>
