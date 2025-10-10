@@ -16,13 +16,14 @@
   .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
   a { display:block; margin:6px 0; color:#007a33; text-decoration:none; }
   a:hover, a:focus { text-decoration:underline; outline:2px solid #007a33; }
+  img { width:32px; height:32px; vertical-align:middle; margin-right:8px; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>WCAG 2.4.4 – Clear & Descriptive Links Demo</h1>
-  <p>Use the dropdown below to switch between vague links (problem) and descriptive links (fix).</p>
+  <p>Use the dropdown to switch between vague links (problem) and descriptive links (fix).</p>
 </header>
 
 <main>
@@ -33,7 +34,7 @@
   </select>
 
   <div class="note" id="note">
-    Current mode demonstrates the clarity of link text for users. Tab through links or use a screen reader to test.
+    Current mode demonstrates link clarity. Tab through links or use a screen reader to test.
   </div>
 
   <div id="link-demo">
@@ -54,12 +55,14 @@ function renderLinks(mode) {
   linkDemo.innerHTML = ''; // Clear existing links
 
   if(mode === 'vague') {
-    note.textContent = 'Vague Links: Notice how "Click here" or "Read more" does not convey link purpose.';
+    note.textContent = 'Vague Links: Examples of "Click here" or repeated links that do not convey purpose.';
     const links = [
       {text:'Click here', href:'report.pdf'},
       {text:'Read more', href:'guidelines.html'},
       {text:'Click here', href:'services.html'},
-      {text:'More info', href:'pricing.html'}
+      {text:'More info', href:'pricing.html'},
+      {text:'Click here', href:'services.html'}, // duplicate
+      {text:'This is a very long link that goes on and on without saying clearly what it does', href:'#'}
     ];
     links.forEach(l=>{
       const a = document.createElement('a');
@@ -67,22 +70,56 @@ function renderLinks(mode) {
       a.textContent = l.text;
       linkDemo.appendChild(a);
     });
+
+    // Image link example (vague alt)
+    const imgLink = document.createElement('a');
+    imgLink.href = 'dashboard.html';
+    const img = document.createElement('img');
+    img.src = 'dashboard-icon.png';
+    img.alt = 'Icon'; // vague alt
+    imgLink.appendChild(img);
+    imgLink.append('Dashboard');
+    linkDemo.appendChild(imgLink);
+
   } else {
-    note.textContent = 'Descriptive Links: Each link text clearly explains where it leads.';
+    note.textContent = 'Descriptive Links: Clear, meaningful links with proper labels and context.';
+
     const links = [
-      {text:'Read our latest accessibility report (PDF)', href:'report.pdf'},
+      {text:'Read our latest accessibility report (PDF)', href:'report.pdf', download:true, aria:'Download PDF file'},
       {text:'Check our Web Accessibility Guidelines', href:'guidelines.html'},
       {text:'Our Services', href:'services.html'},
       {text:'Pricing Information', href:'pricing.html'},
-      {text:'Go to User Dashboard', href:'dashboard.html', aria:'Go to User Dashboard'}
+      {text:'Go to User Dashboard', href:'dashboard.html', aria:'Go to User Dashboard'},
+      {text:'Open Accessibility Report in New Tab', href:'report.pdf', newTab:true, aria:'Open Accessibility Report. Opens in new tab'},
     ];
     links.forEach(l=>{
       const a = document.createElement('a');
       a.href = l.href;
       a.textContent = l.text;
       if(l.aria) a.setAttribute('aria-label', l.aria);
+      if(l.download) a.setAttribute('download','');
+      if(l.newTab) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
       linkDemo.appendChild(a);
     });
+
+    // Image link example
+    const imgLink = document.createElement('a');
+    imgLink.href = 'dashboard.html';
+    const img = document.createElement('img');
+    img.src = 'dashboard-icon.png';
+    img.alt = 'Go to User Dashboard';
+    imgLink.appendChild(img);
+    imgLink.append('User Dashboard');
+    linkDemo.appendChild(imgLink);
+
+    // Concise vs long link example
+    const longLink = document.createElement('a');
+    longLink.href = '#';
+    longLink.textContent = 'Read about our accessibility practices and how we ensure compliance with WCAG 2.4.4';
+    linkDemo.appendChild(longLink);
   }
 }
 
