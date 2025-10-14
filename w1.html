@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.11 – Focus Not Obscured (Minimum) Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; }
+  input, button { display:block; width:90%; padding:10px; margin:14px auto; border:1px solid #ccc; border-radius:4px; font-size:16px; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+
+  /* strong focus indicator */
+  input:focus, button:focus {
+    outline: 4px solid #ff0;
+    outline-offset: 0;
+  }
+
+  /* Sticky header */
+  .sticky-header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 80px;
+    background: #222;
+    color: white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+  }
+
+  .content {
+    margin-top:100px;
+    height: 1500px;
+  }
+
+  /* FIX MODE – prevent focus being hidden */
+  .fixed-scroll-fix input,
+  .fixed-scroll-fix button {
+    scroll-margin-top: 100px; /* match sticky header height */
+  }
+</style>
+</head>
+<body>
+
+<!-- Fixed sticky header always visible -->
+<div class="sticky-header">
+  Sticky Header (Simulated Navigation Bar)
+</div>
+
+<header>
+  <h1>WCAG 2.4.11 – Focus Not Obscured (Minimum)</h1>
+  <p>Use Tab key to move through the form. In FAIL mode, the yellow focus ring will be hidden behind the sticky header. In PASS mode, it remains visible.</p>
+</header>
+
+<main>
+  <label for="focusMode"><strong>Choose Demo Mode:</strong></label>
+  <select id="focusMode">
+    <option value="fail">Obscured Focus (Fail)</option>
+    <option value="pass">Visible Focus (Fix)</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+
+  <div id="demoArea"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.11
+</footer>
+
+<script>
+const focusMode = document.getElementById('focusMode');
+const demoNote = document.getElementById('demoNote');
+const demoArea = document.getElementById('demoArea');
+
+function renderDemo(mode) {
+  demoArea.innerHTML = '';
+
+  const formContainer = document.createElement('div');
+  formContainer.className = 'content';
+  if (mode === 'pass') formContainer.classList.add('fixed-scroll-fix');
+
+  for (let i = 1; i <= 15; i++) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = `Input Field ${i}`;
+    // simulate problematic scrolling in fail mode
+    if (mode === 'fail') {
+      input.addEventListener('focus', () => {
+        input.scrollIntoView(true); // aligns input to top, hidden by sticky header
+      });
+    }
+    formContainer.appendChild(input);
+  }
+
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit Form';
+  if (mode === 'fail') {
+    submitBtn.addEventListener('focus', () => {
+      submitBtn.scrollIntoView(true);
+    });
+  }
+  formContainer.appendChild(submitBtn);
+  demoArea.appendChild(formContainer);
+
+  if (mode === 'fail') {
+    demoNote.textContent = '❌ FAIL MODE: Focused input (yellow outline) gets hidden under the sticky header. You lose sight of where focus is — WCAG 2.4.11 violation.';
+  } else {
+    demoNote.textContent = '✅ PASS MODE: Focused element stays visible. scroll-margin-top ensures focus is not hidden behind the sticky header.';
+  }
+}
+
+renderDemo(focusMode.value);
+focusMode.addEventListener('change', () => renderDemo(focusMode.value));
+</script>
+
+</body>
+</html>

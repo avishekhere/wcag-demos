@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.5.8 – Target Size (Minimum) Demo with Exceptions</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; font-weight:bold; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .demo-area { display:flex; flex-wrap: wrap; gap:12px; margin-top:12px; align-items:flex-start; }
+
+  /* FAIL: small targets */
+  .fail-mode .target {
+    width: 16px;
+    height: 16px;
+    background:#dc3545;
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:10px; cursor:pointer;
+    border-radius:4px;
+  }
+
+  /* PASS: minimum size */
+  .pass-mode .target {
+    width: 30px;
+    height: 30px;
+    background:#28a745;
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:12px; cursor:pointer;
+    border-radius:4px;
+  }
+
+  /* Exception labels */
+  .exception-label {
+    width:100%;
+    font-weight:bold;
+    margin-top:12px;
+    font-size:14px;
+  }
+
+  /* Exception: small targets allowed */
+  .exception-mode .target {
+    background:#ffc107;
+    width:16px;
+    height:16px;
+    display:flex; align-items:center; justify-content:center;
+    color:#000;
+    font-size:10px;
+    cursor:pointer;
+    border-radius:4px;
+  }
+
+  .inline-text {
+    margin:12px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.5.8 – Target Size (Minimum) Demo with Exceptions</h1>
+  <p>Compare small/large targets and see when exceptions apply. Clickable targets are numbered.</p>
+</header>
+
+<main>
+  <label for="modeSelect">Choose Demo Mode:</label>
+  <select id="modeSelect">
+    <option value="fail">Fail – Undersized Targets</option>
+    <option value="pass">Pass – Minimum Size 24×24px</option>
+    <option value="exceptions">Exceptions</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea" class="demo-area"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.5.8
+</footer>
+
+<script>
+const modeSelect = document.getElementById('modeSelect');
+const demoArea = document.getElementById('demoArea');
+const demoNote = document.getElementById('demoNote');
+
+function renderDemo(mode) {
+  demoArea.innerHTML = '';
+
+  if(mode === 'fail') {
+    demoArea.className = 'demo-area fail-mode';
+    demoNote.textContent = '❌ FAIL: Targets are too small (16×16px) and hard to activate accurately.';
+    for(let i=1; i<=10; i++){
+      const btn = document.createElement('div');
+      btn.className = 'target';
+      btn.textContent = i;
+      demoArea.appendChild(btn);
+    }
+  }
+  else if(mode === 'pass') {
+    demoArea.className = 'demo-area pass-mode';
+    demoNote.textContent = '✅ PASS: Targets are at least 24×24px (here 30×30px) and easy to click.';
+    for(let i=1; i<=10; i++){
+      const btn = document.createElement('div');
+      btn.className = 'target';
+      btn.textContent = i;
+      demoArea.appendChild(btn);
+    }
+  }
+  else if(mode === 'exceptions') {
+    demoArea.className = 'demo-area exception-mode';
+    demoNote.textContent = '⚠ EXCEPTIONS: Small targets allowed if inline, spaced, equivalent alternatives, user-agent controlled, or essential.';
+
+    // Exception 1: Spacing
+    const label1 = document.createElement('div');
+    label1.className = 'exception-label';
+    label1.textContent = 'Exception: Spacing';
+    demoArea.appendChild(label1);
+    for(let i=1; i<=3; i++){
+      const btn = document.createElement('div');
+      btn.className = 'target';
+      btn.textContent = i;
+      btn.title = 'Exception: spaced small target';
+      demoArea.appendChild(btn);
+    }
+
+    // Exception 2: Equivalent
+    const label2 = document.createElement('div');
+    label2.className = 'exception-label';
+    label2.textContent = 'Exception: Equivalent alternative exists';
+    demoArea.appendChild(label2);
+    const btnEq = document.createElement('div');
+    btnEq.className = 'target';
+    btnEq.textContent = 'E';
+    btnEq.title = 'Equivalent alternative available';
+    demoArea.appendChild(btnEq);
+
+    // Exception 3: Inline
+    const label3 = document.createElement('div');
+    label3.className = 'exception-label';
+    label3.textContent = 'Exception: Inline text';
+    demoArea.appendChild(label3);
+    const inlineText = document.createElement('span');
+    inlineText.className = 'inline-text';
+    inlineText.innerHTML = 'Here is an <a href="#" style="font-size:12px;">inline small link</a> inside text.';
+    demoArea.appendChild(inlineText);
+
+    // Exception 4: User Agent Control
+    const label4 = document.createElement('div');
+    label4.className = 'exception-label';
+    label4.textContent = 'Exception: User-Agent controlled';
+    demoArea.appendChild(label4);
+    const uaBtn = document.createElement('button');
+    uaBtn.textContent = 'Dropdown';
+    uaBtn.title = 'Rendered by browser/OS';
+    demoArea.appendChild(uaBtn);
+
+    // Exception 5: Essential
+    const label5 = document.createElement('div');
+    label5.className = 'exception-label';
+    label5.textContent = 'Exception: Essential for legal/safety';
+    demoArea.appendChild(label5);
+    const essentialBtn = document.createElement('div');
+    essentialBtn.className = 'target';
+    essentialBtn.textContent = '⚖';
+    essentialBtn.title = 'Essential small target';
+    demoArea.appendChild(essentialBtn);
+  }
+}
+
+// Initialize demo
+renderDemo(modeSelect.value);
+modeSelect.addEventListener('change', () => renderDemo(modeSelect.value));
+</script>
+
+</body>
+</html>

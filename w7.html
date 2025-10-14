@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WCAG 3.3.7 – Redundant Entry Demo</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#fff; --accent:#0b67d0; --fail:#b70f0f; --pass:#0b7a2a; --muted:#666;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;margin:18px;background:var(--bg);color:#111}
+  .container{max-width:980px;margin:0 auto}
+  header{margin-bottom:12px}
+  h1{margin:0 0 6px 0;font-size:22px}
+  p.lead{margin:0 0 12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 1fr; gap:18px}
+  .card{background:var(--card); padding:16px; border-radius:10px; border:1px solid #e6e9ef}
+  h2{margin:0 0 8px 0;font-size:18px}
+  label{display:block;margin-top:10px;font-weight:600}
+  input[type="text"], input[type="email"]{width:100%; padding:8px 10px; border-radius:8px; border:1px solid #ccc; margin-top:6px}
+  .btn { margin-top:12px; padding:10px 12px; border-radius:8px; border:none; background:var(--accent); color:#fff; cursor:pointer }
+  .note{font-size:13px;color:var(--muted);margin-top:8px}
+  .status{margin-top:10px;font-weight:700}
+  .status.fail{color:var(--fail)}
+  .status.pass{color:var(--pass)}
+  .sr-only{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+  fieldset{border:1px dashed #e8eefc; padding:12px; border-radius:8px}
+  .row { display:flex; gap:8px; }
+  .small { font-size:13px; color:var(--muted) }
+  .confirm-box { margin-top:8px; padding:12px; border-radius:6px; background:#f0f8ff; border:1px solid #d6e8ff }
+  .danger { color:var(--fail); font-weight:700 }
+</style>
+</head>
+<body>
+  <div class="container" role="main" aria-labelledby="mainTitle">
+    <header>
+      <h1 id="mainTitle">WCAG 3.3.7 – Redundant Entry Demo</h1>
+      <p class="lead">Compare a <strong>Fail</strong> example (forced re-entry) with a <strong>Pass</strong> example (reuse / confirm previously entered values). Keyboard navigation supported (Tab/Shift+Tab).</p>
+    </header>
+
+    <div class="grid" aria-live="polite">
+      <!-- LEFT: Contact Details (source) -->
+      <section class="card" aria-labelledby="contactTitle">
+        <h2 id="contactTitle">Step 1: Enter Contact Details</h2>
+        <p class="small">This information will be used for the Billing section.</p>
+
+        <form id="contactForm" aria-describedby="contactNote">
+          <label for="c-name">Full Name</label>
+          <input id="c-name" name="fullName" type="text" placeholder="e.g., Abhinav Kumar" autocomplete="name">
+
+          <label for="c-email">Email</label>
+          <input id="c-email" name="email" type="email" placeholder="you@example.com" autocomplete="email">
+
+          <label for="c-phone">Phone</label>
+          <input id="c-phone" name="phone" type="text" placeholder="+91 98765 43210" autocomplete="tel">
+
+          <button id="saveContact" type="button" class="btn">Save Contact</button>
+        </form>
+        <div id="contactSaved" class="note" aria-live="polite"></div>
+        <p id="contactNote" class="note">Saved contact will appear in the Billing section. Pass example allows reuse.</p>
+      </section>
+
+      <!-- RIGHT: Billing Details -->
+      <section class="card" aria-labelledby="billingTitle">
+        <h2 id="billingTitle">Step 2: Billing Details — Fail vs Pass</h2>
+
+        <!-- Fail -->
+        <fieldset id="failFieldset">
+          <legend><strong>Fail Example</strong> — Forced Re-entry</legend>
+          <p class="small">User must type the same info again, wasting time and increasing errors.</p>
+
+          <form id="billingFailForm">
+            <label for="f-name">Full Name</label>
+            <input id="f-name" type="text" placeholder="Type your name again">
+
+            <label for="f-email">Email</label>
+            <input id="f-email" type="email" placeholder="Type your email again">
+
+            <label for="f-phone">Phone</label>
+            <input id="f-phone" type="text" placeholder="Type your phone again">
+
+            <button type="submit" class="btn">Submit Billing (Fail)</button>
+          </form>
+          <div id="failResult" class="note" aria-live="polite"></div>
+        </fieldset>
+
+        <hr style="margin:12px 0">
+
+        <!-- Pass -->
+        <fieldset id="passFieldset">
+          <legend><strong>Pass Example</strong> — Reuse / Confirm Saved Data</legend>
+          <p class="small">Previously entered contact info can be reused. Re-entry required only for essential security reasons.</p>
+
+          <div class="row small">
+            <input id="requireReentry" type="checkbox">
+            <label for="requireReentry" class="small">Require re-entry for security (simulate)</label>
+          </div>
+
+          <div id="passContent" class="confirm-box" aria-live="polite">
+            <p id="passStatus" class="small">No saved contact yet. Fill the Contact Details first.</p>
+
+            <div id="savedOptions" style="display:none">
+              <p><strong>Saved Contact:</strong></p>
+              <div id="savedSummary" class="small" role="region" aria-live="polite"></div>
+              <div style="margin-top:8px">
+                <button id="useSaved" type="button" class="btn">Use saved contact</button>
+                <button id="editSaved" type="button" class="btn" style="background:#666;color:#fff">Edit before using</button>
+                <button id="enterNew" type="button" class="btn" style="background:#999;color:#fff">Enter new details</button>
+              </div>
+
+              <form id="billingPassForm" style="display:none; margin-top:10px;">
+                <label for="p-name">Full Name</label>
+                <input id="p-name" type="text">
+
+                <label for="p-email">Email</label>
+                <input id="p-email" type="email">
+
+                <label for="p-phone">Phone</label>
+                <input id="p-phone" type="text">
+
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                  <button id="passSubmit" type="submit" class="btn">Submit Billing (Pass)</button>
+                  <button id="passCancel" type="button" class="btn" style="background:#ccc;color:#000">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div id="passResult" class="note" aria-live="polite"></div>
+        </fieldset>
+
+        <div class="status" style="margin-top:10px">
+          <span class="status.fail">Fail = redundant re-entry</span> &nbsp; | &nbsp;
+          <span class="status.pass">Pass = reuse / confirm saved data</span>
+        </div>
+      </section>
+    </div>
+
+    <div style="margin-top:14px; padding:10px; border-radius:8px; background:#fff; border:1px solid #eee">
+      <h3 style="margin:0 0 8px 0">Key Points</h3>
+      <ul>
+        <li>SC 3.3.7 reduces unnecessary repetition to save time and minimize errors.</li>
+        <li>Exceptions allowed for security (e.g., passwords, OTPs).</li>
+        <li>Good practice: pre-fill fields, provide reuse/edit/confirm options.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sr-only" aria-live="polite" id="liveAnnounce"></div>
+
+<script>
+(function(){
+  const saveContact = document.getElementById('saveContact');
+  const contactSaved = document.getElementById('contactSaved');
+  const cName = document.getElementById('c-name');
+  const cEmail = document.getElementById('c-email');
+  const cPhone = document.getElementById('c-phone');
+
+  const failForm = document.getElementById('billingFailForm');
+  const failResult = document.getElementById('failResult');
+
+  const passStatus = document.getElementById('passStatus');
+  const savedOptions = document.getElementById('savedOptions');
+  const savedSummary = document.getElementById('savedSummary');
+  const useSaved = document.getElementById('useSaved');
+  const editSaved = document.getElementById('editSaved');
+  const enterNew = document.getElementById('enterNew');
+  const billingPassForm = document.getElementById('billingPassForm');
+  const passSubmit = document.getElementById('passSubmit');
+  const passCancel = document.getElementById('passCancel');
+  const passResult = document.getElementById('passResult');
+  const requireReentry = document.getElementById('requireReentry');
+  const live = document.getElementById('liveAnnounce');
+
+  let savedContact = null;
+
+  function updatePassPane() {
+    if(!savedContact){
+      savedOptions.style.display='none';
+      passStatus.textContent='No saved contact yet. Fill Contact Details first.';
+      live.textContent='No contact saved';
+      return;
+    }
+    savedSummary.textContent=`Name: ${savedContact.fullName}, Email: ${savedContact.email}, Phone: ${savedContact.phone}`;
+    savedOptions.style.display='block';
+    passStatus.textContent='Saved contact detected. Choose an option.';
+    live.textContent='Saved contact detected';
+  }
+
+  saveContact.addEventListener('click',()=>{
+    const name=cName.value.trim();
+    const email=cEmail.value.trim();
+    const phone=cPhone.value.trim();
+    if(!name || !email){
+      contactSaved.textContent='Please provide at least Name and Email.';
+      live.textContent='Missing required fields';
+      return;
+    }
+    savedContact={fullName:name,email,phone};
+    contactSaved.textContent=`Contact saved: ${name} — ${email}`;
+    live.textContent='Contact saved';
+    updatePassPane();
+  });
+
+  failForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const name=document.getElementById('f-name').value.trim();
+    const email=document.getElementById('f-email').value.trim();
+    if(!name || !email){
+      failResult.textContent='Required fields missing.';
+      live.textContent='Fail form missing data';
+      return;
+    }
+    let msg='Billing submitted (Fail).';
+    if(savedContact && savedContact.email===email && savedContact.fullName===name){
+      msg+=' (Values identical to saved contact — redundant re-entry)';
+    }
+    failResult.textContent=msg;
+    live.textContent='Fail billing submitted';
+  });
+
+  useSaved.addEventListener('click',()=>{
+    if(!savedContact) return;
+    if(requireReentry.checked){
+      billingPassForm.style.display='block';
+      document.getElementById('p-name').value=savedContact.fullName;
+      document.getElementById('p-email').value='';
+      document.getElementById('p-phone').value=savedContact.phone;
+      passStatus.textContent='Security requires re-entry of email.';
+      live.textContent='Re-enter email for security';
+      return;
+    }
+    passResult.textContent='Billing submitted (Pass) — used saved contact.';
+    live.textContent='Pass billing submitted';
+  });
+
+  editSaved.addEventListener('click',()=>{
+    if(!savedContact) return;
+    billingPassForm.style.display='block';
+    document.getElementById('p-name').value=savedContact.fullName;
+    document.getElementById('p-email').value=savedContact.email;
+    document.getElementById('p-phone').value=savedContact.phone;
+    passResult.textContent='Edit the fields and submit.';
+    live.textContent='Editing saved contact';
+  });
+
+  enterNew.addEventListener('click',()=>{
+    billingPassForm.style.display='block';
+    document.getElementById('p-name').value='';
+    document.getElementById('p-email').value='';
+    document.getElementById('p-phone').value='';
+    passResult.textContent='Enter new billing details.';
+    live.textContent='Enter new contact';
+  });
+
+  passCancel.addEventListener('click',()=>{
+    billingPassForm.style.display='none';
+    passResult.textContent='Edit cancelled.';
+    live.textContent='Edit cancelled';
+  });
+
+  billingPassForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const n=document.getElementById('p-name').value.trim();
+    const em=document.getElementById('p-email').value.trim();
+    if(!n || !em){
+      passResult.textContent='Name and email required.';
+      live.textContent='Missing required fields';
+      return;
+    }
+    passResult.textContent='Billing submitted (Pass) with entered/edited values.';
+    live.textContent='Pass billing submitted with edited values';
+    billingPassForm.style.display='none';
+  });
+
+  updatePassPane();
+})();
+</script>
+</body>
+</html>

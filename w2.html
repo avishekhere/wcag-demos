@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.12 – Focus Not Obscured (Enhanced) Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; }
+  input, button, textarea { display:block; width:90%; padding:10px; margin:14px auto; border:1px solid #ccc; border-radius:4px; font-size:16px; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+
+  /* strong focus indicator */
+  input:focus, button:focus, textarea:focus {
+    outline: 4px solid #ff0;
+    outline-offset: 0;
+  }
+
+  /* Sticky header */
+  .sticky-header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 80px;
+    background: #222;
+    color: white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+  }
+
+  .content {
+    margin-top:100px;
+    min-height:1500px;
+  }
+</style>
+</head>
+<body>
+
+<div class="sticky-header">
+  Sticky Header (Simulated Navigation Bar)
+</div>
+
+<header>
+  <h1>WCAG 2.4.12 – Focus Not Obscured (Enhanced)</h1>
+  <p>Use Tab key to move through the form. FAIL mode may hide part of elements. PASS mode ensures the **entire element** is fully visible.</p>
+</header>
+
+<main>
+  <label for="focusMode"><strong>Choose Demo Mode:</strong></label>
+  <select id="focusMode">
+    <option value="fail">Obscured Focus (Fail)</option>
+    <option value="pass">Visible Focus (Fix)</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.12
+</footer>
+
+<script>
+const focusMode = document.getElementById('focusMode');
+const demoNote = document.getElementById('demoNote');
+const demoArea = document.getElementById('demoArea');
+
+function renderDemo(mode) {
+  demoArea.innerHTML = '';
+
+  const formContainer = document.createElement('div');
+  formContainer.className = 'content';
+
+  // Create multiple inputs
+  for (let i = 1; i <= 5; i++) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = `Input Field ${i}`;
+    setupFocusBehavior(input, mode);
+    formContainer.appendChild(input);
+  }
+
+  // Add tall textarea to demonstrate enhanced
+  const textarea = document.createElement('textarea');
+  textarea.rows = 12;
+  textarea.placeholder = "Tall Textarea Example (Enhanced Visibility)";
+  setupFocusBehavior(textarea, mode);
+  formContainer.appendChild(textarea);
+
+  // Add submit button
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit Form';
+  setupFocusBehavior(submitBtn, mode);
+  formContainer.appendChild(submitBtn);
+
+  demoArea.appendChild(formContainer);
+
+  // Update note
+  demoNote.textContent = mode === 'fail'
+    ? '❌ FAIL MODE: Focused element may be partially hidden behind the sticky header.'
+    : '✅ PASS MODE: Entire focused element is fully visible in viewport, satisfying WCAG 2.4.12 Enhanced.';
+}
+
+// Setup focus scrolling behavior
+function setupFocusBehavior(el, mode) {
+  if (mode === 'fail') {
+    // Scroll element top to top of viewport (may hide bottom of tall elements)
+    el.addEventListener('focus', () => el.scrollIntoView(true));
+  } else {
+    // Ensure entire element fits in viewport
+    el.addEventListener('focus', () => {
+      const rect = el.getBoundingClientRect();
+      const headerHeight = 80; // sticky header
+      const padding = 10;
+      const viewportHeight = window.innerHeight;
+
+      // If element taller than available space, align top below header
+      if (rect.height + headerHeight + padding > viewportHeight) {
+        window.scrollBy({ top: rect.top - headerHeight - padding, behavior: 'smooth' });
+      } else {
+        // If bottom hidden
+        if (rect.bottom > viewportHeight) {
+          window.scrollBy({ top: rect.bottom - viewportHeight + padding, behavior: 'smooth' });
+        }
+        // If top hidden
+        else if (rect.top < headerHeight) {
+          window.scrollBy({ top: rect.top - headerHeight - padding, behavior: 'smooth' });
+        }
+      }
+    });
+  }
+}
+
+// Initialize demo
+renderDemo(focusMode.value);
+focusMode.addEventListener('change', () => renderDemo(focusMode.value));
+</script>
+
+</body>
+</html>

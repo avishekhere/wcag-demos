@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.4.13 – Focus Appearance Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; }
+  input, button, textarea { display:block; width:90%; padding:10px; margin:14px auto; border:1px solid #ccc; border-radius:4px; font-size:16px; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+
+  /* Fail focus – thin and low contrast */
+  .fail-focus input:focus,
+  .fail-focus button:focus,
+  .fail-focus textarea:focus {
+    outline: 1px solid #999; /* too thin, low contrast */
+  }
+
+  /* Pass focus – thick, high contrast, WCAG compliant */
+  .pass-focus input:focus,
+  .pass-focus button:focus,
+  .pass-focus textarea:focus {
+    outline: 4px solid #0055ff; /* thick, high contrast dark blue */
+    outline-offset: 2px;
+  }
+
+  .content { min-height:1000px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.4.13 – Focus Appearance</h1>
+  <p>Use Tab key to move through elements. Compare FAIL vs PASS mode for focus visibility and contrast.</p>
+</header>
+
+<main>
+  <label for="focusMode"><strong>Choose Demo Mode:</strong></label>
+  <select id="focusMode">
+    <option value="fail">Fail – Poor Focus Indicator</option>
+    <option value="pass">Pass – Proper Focus Indicator</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea" class="fail-focus">
+    <input type="text" placeholder="Input Field 1">
+    <input type="text" placeholder="Input Field 2">
+    <textarea rows="6" placeholder="Textarea Example"></textarea>
+    <button>Submit</button>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.4.13
+</footer>
+
+<script>
+const focusMode = document.getElementById('focusMode');
+const demoArea = document.getElementById('demoArea');
+const demoNote = document.getElementById('demoNote');
+
+function updateDemo(mode) {
+  if(mode === 'fail') {
+    demoArea.className = 'fail-focus';
+    demoNote.textContent = '❌ FAIL: Focus indicator is too thin and low contrast – hard to see keyboard focus.';
+  } else {
+    demoArea.className = 'pass-focus';
+    demoNote.textContent = '✅ PASS: Focus indicator is thick, high contrast, and clearly visible – meets WCAG 2.4.13 requirements.';
+  }
+}
+
+// Initialize demo
+updateDemo(focusMode.value);
+focusMode.addEventListener('change', () => updateDemo(focusMode.value));
+</script>
+
+</body>
+</html>

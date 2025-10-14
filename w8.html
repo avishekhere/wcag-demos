@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 3.3.8 – Accessible Authentication Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; font-weight:bold; }
+  input, select, button { display:block; width:90%; padding:10px; margin:12px auto; border:1px solid #ccc; border-radius:4px; font-size:16px; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .content { margin-top:12px; }
+  .fail-input { background:#f8d7da; }
+  .pass-input { background:#d4edda; }
+  .exception { background:#ffe5b4; }
+  .image-auth { width:100px; height:100px; margin:12px; cursor:pointer; border:2px solid #ccc; display:inline-block; background-size:cover; }
+  .selected { border-color: #28a745; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 3.3.8 – Accessible Authentication Demo</h1>
+  <p>Demonstrates FAIL, PASS, and EXCEPTION scenarios for cognitive function tests in authentication.</p>
+</header>
+
+<main>
+  <label for="demoMode">Choose Demo Mode:</label>
+  <select id="demoMode">
+    <option value="fail">FAIL – Memory test required</option>
+    <option value="pass">PASS – Autofill / Assistance</option>
+    <option value="exception">EXCEPTION – Object/Personal recognition</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea" class="content"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 3.3.8
+</footer>
+
+<script>
+const demoMode = document.getElementById('demoMode');
+const demoNote = document.getElementById('demoNote');
+const demoArea = document.getElementById('demoArea');
+
+function renderDemo(mode) {
+  demoArea.innerHTML = '';
+
+  if(mode === 'fail') {
+    demoNote.textContent = "❌ FAIL: User must remember a complex token or answer to login. No assistance provided.";
+
+    const tokenLabel = document.createElement('label');
+    tokenLabel.textContent = "Enter your security token (remember it!):";
+    const tokenInput = document.createElement('input');
+    tokenInput.type = "text";
+    tokenInput.placeholder = "Type token from memory";
+    tokenInput.className = "fail-input";
+
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = "Login";
+
+    demoArea.append(tokenLabel, tokenInput, submitBtn);
+
+  } else if(mode === 'pass') {
+    demoNote.textContent = "✅ PASS: User can use password manager or copy-paste. Cognitive burden reduced.";
+
+    const userLabel = document.createElement('label');
+    userLabel.textContent = "Username:";
+    const userInput = document.createElement('input');
+    userInput.type = "text";
+    userInput.value = "user@example.com";
+    userInput.className = "pass-input";
+
+    const pwdLabel = document.createElement('label');
+    pwdLabel.textContent = "Password (autofill supported):";
+    const pwdInput = document.createElement('input');
+    pwdInput.type = "password";
+    pwdInput.value = "••••••••";
+    pwdInput.className = "pass-input";
+
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = "Login";
+
+    demoArea.append(userLabel, userInput, pwdLabel, pwdInput, submitBtn);
+
+  } else if(mode === 'exception') {
+    demoNote.textContent = "⚠ EXCEPTION: Authentication via object recognition / personal content allowed.";
+
+    const objLabel = document.createElement('label');
+    objLabel.textContent = "Select your personal photo to authenticate:";
+
+    demoArea.append(objLabel);
+
+    const images = ["url('https://via.placeholder.com/100/ff9999')",
+                    "url('https://via.placeholder.com/100/99ff99')",
+                    "url('https://via.placeholder.com/100/9999ff')"];
+
+    images.forEach(src => {
+      const imgDiv = document.createElement('div');
+      imgDiv.className = "image-auth";
+      imgDiv.style.backgroundImage = src;
+      imgDiv.addEventListener('click', () => {
+        document.querySelectorAll('.image-auth').forEach(el => el.classList.remove('selected'));
+        imgDiv.classList.add('selected');
+      });
+      demoArea.appendChild(imgDiv);
+    });
+
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = "Login";
+    demoArea.appendChild(submitBtn);
+  }
+}
+
+// Initialize demo
+renderDemo(demoMode.value);
+demoMode.addEventListener('change', () => renderDemo(demoMode.value));
+</script>
+
+</body>
+</html>

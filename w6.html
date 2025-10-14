@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 3.2.6 – Consistent Help Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; font-weight:bold; }
+  select { padding:6px 10px; margin:8px 0; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .help-container { margin-top:20px; display:flex; flex-direction: column; gap:10px; }
+  .help-item { padding:10px; border:1px solid #ccc; border-radius:4px; background:#e9ecef; max-width:300px; }
+  .fail .help-item { background:#f8d7da; border-color:#f5c6cb; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 3.2.6 – Consistent Help Demo</h1>
+  <p>Select mode to see consistent vs inconsistent order of help mechanisms across pages.</p>
+</header>
+
+<main>
+  <label for="modeSelect">Choose Demo Mode:</label>
+  <select id="modeSelect">
+    <option value="fail">Fail – Inconsistent Help Order</option>
+    <option value="pass">Pass – Consistent Help Order</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea" class="help-container"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 3.2.6
+</footer>
+
+<script>
+const modeSelect = document.getElementById('modeSelect');
+const demoArea = document.getElementById('demoArea');
+const demoNote = document.getElementById('demoNote');
+
+function renderDemo(mode) {
+  demoArea.innerHTML = '';
+  demoArea.className = 'help-container';
+
+  const helpItems = [
+    { label: 'Phone Support', type: 'phone' },
+    { label: 'Email Form', type: 'email' },
+    { label: 'FAQ', type: 'faq' },
+    { label: 'Chatbot', type: 'chatbot' }
+  ];
+
+  if(mode === 'fail') {
+    demoArea.classList.add('fail');
+    demoNote.textContent = '❌ FAIL: Help mechanisms appear in different order on pages, confusing users.';
+    // Shuffle order
+    const shuffled = [helpItems[2], helpItems[0], helpItems[3], helpItems[1]];
+    shuffled.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'help-item';
+      div.textContent = item.label;
+      demoArea.appendChild(div);
+    });
+  } else {
+    demoNote.textContent = '✅ PASS: Help mechanisms appear in consistent order on all pages.';
+    helpItems.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'help-item';
+      div.textContent = item.label;
+      demoArea.appendChild(div);
+    });
+  }
+}
+
+// Initialize
+renderDemo(modeSelect.value);
+modeSelect.addEventListener('change', () => renderDemo(modeSelect.value));
+</script>
+
+</body>
+</html>

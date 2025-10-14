@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 3.3.9 – Accessible Authentication (Enhanced) Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f4f4f4; }
+  header { background:#004aad; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#222; color:white; text-align:center; padding:12px; }
+  label { display:block; margin-top:12px; font-weight:bold; }
+  input, button, select { display:block; width:90%; padding:10px; margin:10px auto; border:1px solid #ccc; border-radius:4px; font-size:16px; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .fail { background:#f8d7da; }
+  .pass { background:#d4edda; }
+  .biometric-btn { display:inline-block; padding:12px 20px; background:#28a745; color:white; border:none; border-radius:8px; cursor:pointer; margin:8px auto; font-size:16px; }
+  .biometric-btn:hover { background:#218838; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 3.3.9 – Accessible Authentication (Enhanced)</h1>
+  <p>Demonstrating AAA-level authentication with alternatives and assistive mechanisms.</p>
+</header>
+
+<main>
+  <label for="mode">Select Demo Mode:</label>
+  <select id="mode">
+    <option value="fail">❌ FAIL – Password Memory Required</option>
+    <option value="alternative">✅ PASS – Alternative Authentication (Biometric/Passkey)</option>
+    <option value="mechanism">✅ PASS – Mechanism-Assisted Authentication (Magic Link)</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+  <div id="demoArea"></div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 3.3.9
+</footer>
+
+<script>
+const mode = document.getElementById('mode');
+const demoNote = document.getElementById('demoNote');
+const demoArea = document.getElementById('demoArea');
+
+function renderDemo(type) {
+  demoArea.innerHTML = '';
+
+  if (type === 'fail') {
+    demoNote.textContent = "❌ FAIL: User must recall complex password with no support. Violates 3.3.9.";
+    const label = document.createElement('label');
+    label.textContent = "Enter your password:";
+    const input = document.createElement('input');
+    input.type = "password";
+    input.placeholder = "Remember and type manually";
+    input.className = "fail";
+    const btn = document.createElement('button');
+    btn.textContent = "Login";
+    demoArea.append(label, input, btn);
+  }
+
+  if (type === 'alternative') {
+    demoNote.textContent = "✅ PASS: Alternative method available — biometric or passkey. No memory needed.";
+    const info = document.createElement('p');
+    info.textContent = "Use fingerprint or face recognition to continue:";
+    const bioBtn = document.createElement('button');
+    bioBtn.textContent = "🔒 Authenticate with Biometrics";
+    bioBtn.className = "biometric-btn";
+    demoArea.append(info, bioBtn);
+  }
+
+  if (type === 'mechanism') {
+    demoNote.textContent = "✅ PASS: Mechanism-assisted method — user receives a magic link (no memory test).";
+    const emailLabel = document.createElement('label');
+    emailLabel.textContent = "Email Address:";
+    const emailInput = document.createElement('input');
+    emailInput.type = "email";
+    emailInput.placeholder = "user@example.com";
+    emailInput.className = "pass";
+    const btn = document.createElement('button');
+    btn.textContent = "Send Magic Login Link";
+    demoArea.append(emailLabel, emailInput, btn);
+  }
+}
+
+renderDemo(mode.value);
+mode.addEventListener('change', () => renderDemo(mode.value));
+</script>
+
+</body>
+</html>

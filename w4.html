@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.5.7 – Dragging Movements Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+  header { background:#0b5cff; color:white; padding:16px; }
+  main { padding:20px; background:white; margin:16px; border-radius:8px; box-shadow:0 0 6px rgba(0,0,0,0.1); }
+  footer { background:#333; color:white; text-align:center; padding:12px; }
+  .note { background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:12px 0; }
+  .demo-area { margin-top:20px; height:400px; border:2px dashed #ccc; position: relative; }
+  .draggable { width:80px; height:80px; background:#0b5cff; color:white; display:flex; align-items:center; justify-content:center; position:absolute; top:50px; left:50px; cursor:grab; border-radius:8px; }
+  .controls { margin-top:16px; }
+  .controls button { margin-right:8px; padding:8px 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WCAG 2.5.7 – Dragging Movements</h1>
+  <p>Compare FAIL vs PASS mode. In FAIL, the box can only be moved by dragging. In PASS, you can also move it using buttons or keyboard.</p>
+</header>
+
+<main>
+  <label for="demoMode"><strong>Choose Demo Mode:</strong></label>
+  <select id="demoMode">
+    <option value="fail">Fail – Drag Only</option>
+    <option value="pass">Pass – Drag or Click/Keyboard</option>
+  </select>
+
+  <div class="note" id="demoNote"></div>
+
+  <div class="demo-area" id="demoArea">
+    <div class="draggable" id="box" tabindex="0">Box</div>
+  </div>
+
+  <div class="controls" id="controls" style="display:none;">
+    <button data-move="up">Up</button>
+    <button data-move="down">Down</button>
+    <button data-move="left">Left</button>
+    <button data-move="right">Right</button>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Accessibility Demo | WCAG 2.5.7
+</footer>
+
+<script>
+const demoMode = document.getElementById('demoMode');
+const demoNote = document.getElementById('demoNote');
+const box = document.getElementById('box');
+const controls = document.getElementById('controls');
+const demoArea = document.getElementById('demoArea');
+
+let offsetX, offsetY, dragging = false;
+
+function updateDemo(mode) {
+  if(mode === 'fail') {
+    demoNote.textContent = '❌ FAIL: The box can only be moved by dragging.';
+    controls.style.display = 'none';
+    box.tabIndex = 0; // keep focusable but no keyboard control
+  } else {
+    demoNote.textContent = '✅ PASS: The box can be moved by dragging, buttons, or arrow keys.';
+    controls.style.display = 'block';
+    box.tabIndex = 0;
+  }
+}
+
+// Dragging functionality
+box.addEventListener('mousedown', e => {
+  dragging = true;
+  offsetX = e.offsetX;
+  offsetY = e.offsetY;
+  box.style.cursor = 'grabbing';
+});
+document.addEventListener('mouseup', () => {
+  dragging = false;
+  box.style.cursor = 'grab';
+});
+document.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  const rect = demoArea.getBoundingClientRect();
+  let x = e.clientX - rect.left - offsetX;
+  let y = e.clientY - rect.top - offsetY;
+  x = Math.max(0, Math.min(rect.width - box.offsetWidth, x));
+  y = Math.max(0, Math.min(rect.height - box.offsetHeight, y));
+  box.style.left = x + 'px';
+  box.style.top = y + 'px';
+});
+
+// Keyboard functionality for PASS mode
+box.addEventListener('keydown', e => {
+  if(demoMode.value !== 'pass') return;
+  let left = parseInt(box.style.left);
+  let top = parseInt(box.style.top);
+  switch(e.key) {
+    case 'ArrowUp': box.style.top = Math.max(0, top-10)+'px'; break;
+    case 'ArrowDown': box.style.top = Math.min(demoArea.clientHeight-box.offsetHeight, top+10)+'px'; break;
+    case 'ArrowLeft': box.style.left = Math.max(0, left-10)+'px'; break;
+    case 'ArrowRight': box.style.left = Math.min(demoArea.clientWidth-box.offsetWidth, left+10)+'px'; break;
+  }
+});
+
+// Button controls for PASS mode
+controls.addEventListener('click', e => {
+  if(e.target.tagName !== 'BUTTON' || demoMode.value !== 'pass') return;
+  const move = e.target.getAttribute('data-move');
+  let left = parseInt(box.style.left);
+  let top = parseInt(box.style.top);
+  switch(move) {
+    case 'up': box.style.top = Math.max(0, top-10)+'px'; break;
+    case 'down': box.style.top = Math.min(demoArea.clientHeight-box.offsetHeight, top+10)+'px'; break;
+    case 'left': box.style.left = Math.max(0, left-10)+'px'; break;
+    case 'right': box.style.left = Math.min(demoArea.clientWidth-box.offsetWidth, left+10)+'px'; break;
+  }
+});
+
+demoMode.addEventListener('change', () => updateDemo(demoMode.value));
+
+// Initialize
+updateDemo(demoMode.value);
+</script>
+
+</body>
+</html>
