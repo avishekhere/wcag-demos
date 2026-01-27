@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WCAG 2.1 – 1.4.10 Reflow Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  /* ================= FAIL STYLES ================= */
+  .fixed-layout {
+    width: 1000px;           /* fixed width causes horizontal scroll */
+    display: flex;
+    gap: 20px;
+  }
+
+  .fixed-card {
+    width: 300px;
+    background: #fdecea;
+    padding: 15px;
+    border-radius: 6px;
+  }
+
+  /* ================= PASS STYLES ================= */
+  .responsive-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .responsive-card {
+    background: #eef2ff;
+    padding: 15px;
+    border-radius: 6px;
+  }
+
+  /* ================= EXCEPTION ================= */
+  .table-wrapper {
+    overflow-x: auto;  /* allowed horizontal scroll */
+    border: 1px solid #ccc;
+  }
+
+  table {
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+
+  th, td {
+    border: 1px solid #aaa;
+    padding: 8px;
+    text-align: left;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.10: Reflow</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Two-direction scrolling at 320px</option>
+  <option value="pass">✅ Pass – Content reflows correctly</option>
+</select>
+
+<p class="note">
+Resize the browser width to <strong>320 CSS pixels</strong> (mobile width) to test reflow behavior.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Fixed Layout (Fail)</h2>
+
+        <div class="fixed-layout">
+          <div class="fixed-card">
+            <h3>News</h3>
+            <p>Latest government updates and announcements.</p>
+          </div>
+          <div class="fixed-card">
+            <h3>Services</h3>
+            <p>Citizen services and online applications.</p>
+          </div>
+          <div class="fixed-card">
+            <h3>Contact</h3>
+            <p>Department contact details and support.</p>
+          </div>
+        </div>
+
+        <p class="note">
+          ❌ At 320px width, horizontal scrolling is required to read content.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Responsive Layout (Pass)</h2>
+
+        <div class="responsive-layout">
+          <div class="responsive-card">
+            <h3>News</h3>
+            <p>Latest government updates and announcements.</p>
+          </div>
+          <div class="responsive-card">
+            <h3>Services</h3>
+            <p>Citizen services and online applications.</p>
+          </div>
+          <div class="responsive-card">
+            <h3>Contact</h3>
+            <p>Department contact details and support.</p>
+          </div>
+        </div>
+
+        <p class="note">
+          ✅ Content reflows vertically without horizontal scrolling at 320px.
+        </p>
+      </section>
+
+      <section>
+        <h2>Exception – Two-Dimensional Content (Allowed)</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <tr>
+              <th>Year</th>
+              <th>Department</th>
+              <th>Budget (₹ Cr)</th>
+              <th>Expenditure (₹ Cr)</th>
+            </tr>
+            <tr>
+              <td>2023</td>
+              <td>Health</td>
+              <td>500</td>
+              <td>480</td>
+            </tr>
+            <tr>
+              <td>2023</td>
+              <td>Education</td>
+              <td>620</td>
+              <td>600</td>
+            </tr>
+          </table>
+        </div>
+
+        <p class="note">
+          ✔ Horizontal scrolling is allowed for content that requires a two-dimensional layout.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

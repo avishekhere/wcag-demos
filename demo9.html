@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.3.3 Sensory Characteristics Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 {
+    margin-top: 0;
+  }
+  label, select {
+    display: block;
+    margin-bottom: 10px;
+  }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .btn {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background: #1976d2;
+    color: #fff;
+  }
+  .btn-secondary {
+    background: #ccc;
+    color: #000;
+  }
+  .red-text {
+    color: red;
+    font-weight: bold;
+  }
+  .box {
+    padding: 15px;
+    background: #eef2ff;
+    border-radius: 6px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.3.3: Sensory Characteristics</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Instructions rely only on sensory cues</option>
+  <option value="pass">✅ Pass – Instructions include non-sensory text</option>
+</select>
+
+<p class="note">
+This demo shows how instructions must not depend only on colour, shape, position, orientation, or sound.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(modeValue) {
+
+  if (modeValue === "fail") {
+    demo.innerHTML = `
+
+    <!-- Colour -->
+    <section>
+      <h2>1. Colour-Only Instruction (Fail)</h2>
+      <p>Fields marked in <span class="red-text">red</span> are mandatory.</p>
+      <input type="text" placeholder="Name">
+      <p class="note">❌ Users who cannot perceive colour will miss the instruction</p>
+    </section>
+
+    <!-- Position -->
+    <section>
+      <h2>2. Position-Only Instruction (Fail)</h2>
+      <p>Click the button on the right to continue.</p>
+      <div class="row">
+        <button class="btn-secondary">Cancel</button>
+        <button class="btn">Continue</button>
+      </div>
+      <p class="note">❌ Screen reader users cannot identify “right”</p>
+    </section>
+
+    <!-- Shape -->
+    <section>
+      <h2>3. Shape-Only Instruction (Fail)</h2>
+      <p>Press the round button to submit.</p>
+      <button class="btn"></button>
+      <p class="note">❌ Shape alone does not convey meaning</p>
+    </section>
+
+    <!-- Sound -->
+    <section>
+      <h2>4. Sound-Only Instruction (Fail)</h2>
+      <p>When you hear a beep, your form is submitted.</p>
+      <p class="note">❌ Deaf users cannot perceive sound-based feedback</p>
+    </section>
+    `;
+  }
+
+  else {
+    demo.innerHTML = `
+
+    <!-- Colour -->
+    <section>
+      <h2>1. Colour Instruction with Text (Pass)</h2>
+      <p>All mandatory fields are marked with the word <strong>Required</strong>.</p>
+      <label for="name">Name (Required)</label>
+      <input type="text" id="name">
+      <p class="note">✅ Instruction does not rely only on colour</p>
+    </section>
+
+    <!-- Position -->
+    <section>
+      <h2>2. Position Instruction with Identification (Pass)</h2>
+      <p>Click the <strong>Continue</strong> button to proceed.</p>
+      <div class="row">
+        <button class="btn-secondary">Cancel</button>
+        <button class="btn">Continue</button>
+      </div>
+      <p class="note">✅ Button identified by text label</p>
+    </section>
+
+    <!-- Shape -->
+    <section>
+      <h2>3. Shape with Text Label (Pass)</h2>
+      <p>To submit the form, press the round button labelled <strong>Go</strong>.</p>
+      <button class="btn">Go</button>
+      <p class="note">✅ Shape and text together provide clarity</p>
+    </section>
+
+    <!-- Sound -->
+    <section>
+      <h2>4. Sound with Visual/Text Feedback (Pass)</h2>
+      <p>After submission, a confirmation message will appear on the screen.</p>
+      <div class="box">✔ Your form has been submitted successfully.</div>
+      <p class="note">✅ Information available without relying on sound</p>
+    </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

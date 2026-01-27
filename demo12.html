@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.1 Use of Color Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .note { font-size: 13px; color: #555; }
+
+  /* Common */
+  input {
+    display: block;
+    width: 60%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  .btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background: #eee;
+    cursor: pointer;
+  }
+
+  /* Fail styles (color-only cues) */
+  .required-red { color: red; }
+  .error-red { color: red; }
+  .status-green { color: green; }
+  .status-blue { color: blue; }
+  .link-color-only { color: blue; text-decoration: none; }
+
+  /* Pass styles (redundant cues) */
+  .required-text::after { content: " (Required)"; font-weight: bold; }
+  .error-box {
+    border-left: 4px solid #c00;
+    padding: 10px;
+    background: #fdecec;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  .status.success::before { content: "✔"; }
+  .status.info::before { content: "ℹ"; }
+  .link-redundant {
+    color: blue;
+    text-decoration: underline;
+    font-weight: bold;
+  }
+  .legend {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  .swatch {
+    width: 14px; height: 14px; border: 1px solid #333; display: inline-block;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.1: Use of Color</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Color only conveys information</option>
+  <option value="pass">✅ Pass – Color with redundant cues</option>
+</select>
+
+<p class="note">
+This demo shows that color must not be the only means to convey information, indicate actions, or distinguish elements.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <!-- Required Fields -->
+      <section>
+        <h2>1. Required Fields (Fail)</h2>
+        <p class="note">Instruction: Fields shown in red are mandatory.</p>
+        <label class="required-red" for="name">Name</label>
+        <input id="name" type="text">
+        <p class="note">❌ Meaning conveyed by color only</p>
+      </section>
+
+      <!-- Errors -->
+      <section>
+        <h2>2. Error Message (Fail)</h2>
+        <p class="error-red">Invalid email address.</p>
+        <p class="note">❌ Error indicated only by red text</p>
+      </section>
+
+      <!-- Status / Categories -->
+      <section>
+        <h2>3. Status / Categories (Fail)</h2>
+        <p>
+          <span class="status-green">January Sales</span> and
+          <span class="status-blue">July Sales</span>
+        </p>
+        <p class="note">❌ Categories distinguished by color only</p>
+      </section>
+
+      <!-- Links -->
+      <section>
+        <h2>4. Links (Fail)</h2>
+        <p>
+          Read our <a class="link-color-only" href="#">Accessibility Policy</a>.
+        </p>
+        <p class="note">❌ Link identified by color only</p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <!-- Required Fields -->
+      <section>
+        <h2>1. Required Fields (Pass)</h2>
+        <p class="note">Instruction: Required fields are clearly labeled.</p>
+        <label class="required-text" for="name">Name</label>
+        <input id="name" type="text" aria-required="true">
+        <p class="note">✅ Text label provided in addition to color</p>
+      </section>
+
+      <!-- Errors -->
+      <section>
+        <h2>2. Error Message (Pass)</h2>
+        <div class="error-box" role="alert">
+          <strong>Error:</strong> Invalid email address.
+        </div>
+        <p class="note">✅ Error conveyed with text and structure</p>
+      </section>
+
+      <!-- Status / Categories -->
+      <section>
+        <h2>3. Status / Categories (Pass)</h2>
+        <div class="legend">
+          <span class="swatch" style="background:#8bc34a"></span> January Sales
+          <span class="swatch" style="background:#64b5f6"></span> July Sales
+        </div>
+        <p class="note">✅ Legend text explains categories beyond color</p>
+      </section>
+
+      <!-- Links -->
+      <section>
+        <h2>4. Links (Pass)</h2>
+        <p>
+          Read our <a class="link-redundant" href="#">Accessibility Policy</a>.
+        </p>
+        <p class="note">✅ Links identifiable without color (underline + text)</p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

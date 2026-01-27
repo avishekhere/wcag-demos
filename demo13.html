@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.2 Audio Control Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+  .warning {
+    background: #ffe0e0;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+  .success {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+  button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    cursor: pointer;
+    background: #eee;
+    margin-right: 10px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.2: Audio Control</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Autoplay audio without control</option>
+  <option value="pass">✅ Pass – Audio control available</option>
+</select>
+
+<p class="note">
+This demo shows why automatically playing audio must be controllable for accessibility.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+let audio;
+
+function render(m) {
+  if (audio) {
+    audio.pause();
+    audio = null;
+  }
+
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Background Audio (Fail)</h2>
+
+        <div class="warning">
+          Background audio starts automatically and cannot be stopped.
+        </div>
+
+        <p class="note">
+          ❌ Audio plays for more than 3 seconds with no pause or volume control.
+          Screen reader users may not hear spoken feedback clearly.
+        </p>
+      </section>
+    `;
+
+    audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+    audio.loop = true;
+    audio.play();
+
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Background Audio (Pass)</h2>
+
+        <div class="success">
+          Audio control is available at the start of the page.
+        </div>
+
+        <button onclick="pauseAudio()">Pause Audio</button>
+        <button onclick="playAudio()">Play Audio</button>
+
+        <p class="note">
+          ✅ Users can pause or stop the audio independently of system volume.
+        </p>
+      </section>
+    `;
+
+    audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+    audio.loop = true;
+    audio.play();
+  }
+}
+
+function pauseAudio() {
+  if (audio) audio.pause();
+}
+
+function playAudio() {
+  if (audio) audio.play();
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

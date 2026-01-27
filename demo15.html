@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.4 Resize Text Demo</title>
+
+<style>
+  :root { font-size: 16px; } /* base size */
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 { margin-top: 0; }
+  label, select, button { display: inline-block; margin: 8px 8px 8px 0; }
+  section { border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px; }
+  .note { font-size: 0.875rem; color: #555; }
+
+  /* ===== FAIL STYLES (fixed units, clipping) ===== */
+  .fixed-card {
+    width: 300px;            /* fixed width */
+    height: 120px;           /* fixed height */
+    overflow: hidden;        /* causes text loss when zoomed */
+    padding: 10px;           /* fixed padding */
+    border: 1px solid #ccc;
+    background: #fafafa;
+  }
+  .fixed-text {
+    font-size: 14px;         /* px prevents effective scaling */
+    line-height: 18px;       /* fixed line-height */
+  }
+
+  /* ===== PASS STYLES (relative units, flexible containers) ===== */
+  .flex-card {
+    max-width: 32rem;        /* relative width */
+    padding: 1rem;          /* relative padding */
+    border: 1px solid #ccc;
+    background: #eef2ff;
+  }
+  .flex-text {
+    font-size: 1rem;         /* scales with root font-size */
+    line-height: 1.5;        /* relative line-height */
+  }
+
+  /* Controls */
+  .controls button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background: #eee;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.4: Resize Text</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Text breaks at 200%</option>
+  <option value="pass">✅ Pass – Text resizes to 200%</option>
+</select>
+
+<div class="controls">
+  <button onclick="setSize(1)">100%</button>
+  <button onclick="setSize(1.5)">150%</button>
+  <button onclick="setSize(2)">200%</button>
+</div>
+
+<p class="note">
+Use the buttons above or browser zoom (Ctrl/⌘ + +) to test resizing up to 200%.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function setSize(multiplier) {
+  document.documentElement.style.fontSize = (16 * multiplier) + "px";
+}
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Fixed Layout (Fail)</h2>
+        <div class="fixed-card">
+          <p class="fixed-text">
+            This text is inside a fixed-size container using pixel values.
+            When resized to 200%, content is clipped and functionality is lost.
+          </p>
+        </div>
+        <p class="note">
+          ❌ Text cannot be resized to 200% without loss of content.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Flexible Layout (Pass)</h2>
+        <div class="flex-card">
+          <p class="flex-text">
+            This text uses relative units (rem, em, percentages).
+            At 200% zoom, the container expands and all content remains visible
+            and usable without assistive technology.
+          </p>
+        </div>
+        <p class="note">
+          ✅ Text resizes up to 200% with no loss of content or functionality.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

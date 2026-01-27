@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.5 Images of Text Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  /* Image simulation */
+  .image-text {
+    width: 320px;
+    height: 80px;
+    background: linear-gradient(45deg, #3f51b5, #7986cb);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  /* Proper text styling */
+  .styled-text {
+    font-size: 26px;
+    font-weight: bold;
+    color: #1a237e;
+    letter-spacing: 1px;
+  }
+
+  /* Logo exception */
+  .logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #9c27b0;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.5: Images of Text</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Text presented as images</option>
+  <option value="pass">✅ Pass – Real text styled with CSS</option>
+</select>
+
+<p class="note">
+This demo shows why text should be implemented as real text rather than images of text,
+except where permitted by WCAG.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Page Heading (Fail)</h2>
+        <div class="image-text" role="img" aria-label="Citizen Services Portal">
+          Citizen Services Portal
+        </div>
+        <p class="note">
+          ❌ Heading is an image of text. Users cannot resize, select, or restyle the text.
+        </p>
+      </section>
+
+      <section>
+        <h2>Navigation Menu (Fail)</h2>
+        <div class="image-text">Home</div>
+        <div class="image-text">Services</div>
+        <div class="image-text">Contact</div>
+        <p class="note">
+          ❌ Navigation items are images of text instead of real text.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Page Heading (Pass)</h2>
+        <div class="styled-text">Citizen Services Portal</div>
+        <p class="note">
+          ✅ Heading is real text styled using CSS.
+        </p>
+      </section>
+
+      <section>
+        <h2>Navigation Menu (Pass)</h2>
+        <nav>
+          <a href="#">Home</a> |
+          <a href="#">Services</a> |
+          <a href="#">Contact</a>
+        </nav>
+        <p class="note">
+          ✅ Navigation uses real text, accessible to screen readers and text-only browsers.
+        </p>
+      </section>
+
+      <section>
+        <h2>Allowed Exception – Logotype</h2>
+        <div class="logo">GovBrand</div>
+        <p class="note">
+          ✔ Logo text is exempt from contrast and image-of-text restrictions.
+        </p>
+      </section>
+
+      <section>
+        <h2>Allowed Exception – Essential Presentation</h2>
+        <p class="note">
+          ✔ Certain designs (e.g., artistic posters or brand-specific lettering)
+          may require images of text where the presentation itself conveys meaning.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

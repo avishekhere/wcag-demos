@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.3.1 Information and Relationships Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  h1 {
+    margin-top: 0;
+  }
+  label, select {
+    display: block;
+    margin-bottom: 10px;
+  }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .fake-heading {
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .fake-list div {
+    margin-left: 20px;
+  }
+  .required {
+    color: red;
+  }
+  input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 6px;
+    width: 60%;
+  }
+  fieldset {
+    padding: 15px;
+    border-radius: 6px;
+  }
+  legend {
+    font-weight: bold;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.3.1: Information & Relationships</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Visual cues only</option>
+  <option value="pass">✅ Pass – Programmatic structure</option>
+</select>
+
+<p class="note">
+This demo shows how structure and relationships must remain available when CSS is removed or when content is read by a screen reader.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(modeValue) {
+
+  if (modeValue === "fail") {
+    demo.innerHTML = `
+
+    <!-- Headings -->
+    <section>
+      <h2>1. Page Structure (Fail)</h2>
+      <div class="fake-heading">Citizen Services</div>
+      <div class="fake-heading">Available Schemes</div>
+      <p class="note">❌ Headings created using visual styling only</p>
+    </section>
+
+    <!-- List -->
+    <section>
+      <h2>2. List of Items (Fail)</h2>
+      <div class="fake-list">
+        <div>• Passport Services</div>
+        <div>• Driving License</div>
+        <div>• Voter Registration</div>
+      </div>
+      <p class="note">❌ List not marked programmatically</p>
+    </section>
+
+    <!-- Form -->
+    <section>
+      <h2>3. Required Fields (Fail)</h2>
+      <p><span class="required">*</span> Fields marked in red are mandatory</p>
+
+      <div>Name <span class="required">*</span></div>
+      <input type="text">
+
+      <div>Email <span class="required">*</span></div>
+      <input type="email">
+
+      <p class="note">❌ Required relationship conveyed only visually</p>
+    </section>
+
+    <!-- Grouping -->
+    <section>
+      <h2>4. Related Controls (Fail)</h2>
+      <p>Choose preferred contact method:</p>
+      <input type="radio" name="c"> Email<br>
+      <input type="radio" name="c"> Phone
+      <p class="note">❌ No programmatic grouping</p>
+    </section>
+    `;
+  }
+
+  else {
+    demo.innerHTML = `
+
+    <!-- Headings -->
+    <section>
+      <h2>1. Page Structure (Pass)</h2>
+      <h3>Citizen Services</h3>
+      <h4>Available Schemes</h4>
+      <p class="note">✅ Proper heading hierarchy provided</p>
+    </section>
+
+    <!-- List -->
+    <section>
+      <h2>2. List of Items (Pass)</h2>
+      <ul>
+        <li>Passport Services</li>
+        <li>Driving License</li>
+        <li>Voter Registration</li>
+      </ul>
+      <p class="note">✅ List structure programmatically available</p>
+    </section>
+
+    <!-- Form -->
+    <section>
+      <h2>3. Required Fields (Pass)</h2>
+      <p>All required fields are marked with <span aria-hidden="true">*</span></p>
+
+      <label for="name">Name <span aria-hidden="true">*</span></label>
+      <input type="text" id="name" aria-required="true">
+
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input type="email" id="email" aria-required="true">
+
+      <p class="note">✅ Required relationship conveyed programmatically</p>
+    </section>
+
+    <!-- Grouping -->
+    <section>
+      <h2>4. Related Controls (Pass)</h2>
+      <fieldset>
+        <legend>Preferred Contact Method</legend>
+        <input type="radio" name="contact" id="emailc">
+        <label for="emailc">Email</label><br>
+        <input type="radio" name="contact" id="phonec">
+        <label for="phonec">Phone</label>
+      </fieldset>
+      <p class="note">✅ Relationship preserved using fieldset and legend</p>
+    </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>
