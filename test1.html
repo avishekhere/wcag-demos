@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.3.2 Meaningful Sequence (Pass & Fail)</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1, h2 {
+    margin-top: 0;
+  }
+
+  label, select {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .box {
+    padding: 15px;
+    background: #eef2ff;
+    border-radius: 6px;
+    width: 100%;
+  }
+
+  .flex {
+    display: flex;
+    gap: 20px;
+  }
+
+  /* FAIL CASE: Visual reorder only */
+  .visual-reorder {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+  }
+
+  /* Focus styling */
+  button, input {
+    margin-top: 8px;
+    padding: 6px;
+  }
+
+  button:focus,
+  input:focus {
+    outline: 3px solid #005fcc;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.3.2 Meaningful Sequence</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">Fail – Incorrect reading and focus order</option>
+  <option value="pass">Pass – Logical reading and focus order</option>
+</select>
+
+<p class="note">
+This demo shows how visual layout changes can break reading and keyboard focus order if the HTML sequence is incorrect.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(value) {
+
+  if (value === "fail") {
+    demo.innerHTML = `
+    <section>
+      <h2>FAIL CASE 1: Instructions Visually Reordered</h2>
+
+      <div class="visual-reorder">
+        <div class="box">
+          <p><strong>Step 2:</strong> Submit the form</p>
+          <button>Submit</button>
+        </div>
+
+        <div class="box">
+          <p><strong>Step 1:</strong> Enter your details</p>
+          <input type="text" placeholder="Your name">
+        </div>
+      </div>
+
+      <p class="note">
+        Failure: Screen readers and keyboard users encounter Step 2 before Step 1.
+        This violates SC 1.3.2 and 2.4.3.
+      </p>
+    </section>
+
+    <section>
+      <h2>FAIL CASE 2: Sidebar Read Before Main Content</h2>
+
+      <div class="flex">
+        <div class="box">
+          <p><strong>Sidebar</strong></p>
+          <button>Breaking News</button>
+        </div>
+
+        <div class="box">
+          <p><strong>Main Content</strong></p>
+          <button>Read Article</button>
+        </div>
+      </div>
+
+      <p class="note">
+        Failure: Sidebar appears first in DOM, so focus and reading order are incorrect.
+      </p>
+    </section>
+    `;
+  }
+
+  else {
+    demo.innerHTML = `
+    <section>
+      <h2>PASS CASE 1: Correct Instruction Sequence</h2>
+
+      <ol>
+        <li>
+          Enter your details
+          <br>
+          <input type="text" placeholder="Your name">
+        </li>
+        <li>
+          Submit the form
+          <br>
+          <button>Submit</button>
+        </li>
+      </ol>
+
+      <p class="note">
+        Pass: Ordered list ensures correct reading and keyboard focus sequence.
+      </p>
+    </section>
+
+    <section>
+      <h2>PASS CASE 2: Logical DOM Order with Visual Layout</h2>
+
+      <div class="flex">
+        <div class="box">
+          <p><strong>Main Content</strong></p>
+          <button>Read Article</button>
+        </div>
+
+        <div class="box" style="order:-1">
+          <p><strong>Sidebar</strong></p>
+          <button>Breaking News</button>
+        </div>
+      </div>
+
+      <p class="note">
+        Pass: Main content appears first in HTML.
+        CSS order changes visual placement without breaking reading or focus order.
+      </p>
+    </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>
