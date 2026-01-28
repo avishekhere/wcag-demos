@@ -14,71 +14,68 @@
   }
 
   .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 30px auto;
     background: #ffffff;
-    padding: 25px;
+    padding: 30px;
     border-radius: 10px;
     box-shadow: 0 6px 16px rgba(0,0,0,0.1);
   }
 
-  h1 { margin-top: 0; }
-  label, select { display: block; margin-bottom: 10px; }
+  h1, h2 {
+    margin-top: 0;
+  }
+
+  label, select {
+    display: block;
+    margin-bottom: 10px;
+  }
 
   section {
     border-top: 1px solid #ddd;
-    padding-top: 20px;
-    margin-top: 20px;
+    padding-top: 25px;
+    margin-top: 25px;
+  }
+
+  button, input, select {
+    padding: 6px;
+    margin-top: 6px;
+  }
+
+  button:focus,
+  input:focus,
+  select:focus,
+  a:focus {
+    outline: 3px solid #005fcc;
+  }
+
+  .menu {
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu > li {
+    margin-bottom: 5px;
+  }
+
+  .submenu {
+    display: none;
+    margin-left: 20px;
+  }
+
+  .submenu.open {
+    display: block;
+  }
+
+  .drag-area {
+    padding: 20px;
+    border: 2px dashed #999;
+    margin-top: 10px;
   }
 
   .note {
     font-size: 13px;
     color: #555;
-  }
-
-  button {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid #999;
-    background: #eee;
-    cursor: pointer;
-  }
-
-  /* ===== FAIL STYLES ===== */
-  .mouse-only {
-    background: #e0e0e0;
-    padding: 12px;
-    display: inline-block;
-    cursor: pointer;
-  }
-
-  /* ===== PASS STYLES ===== */
-  .kbd-btn {
-    background: #0d47a1;
-    color: #fff;
-    border: none;
-  }
-
-  .kbd-btn:focus {
-    outline: 3px solid #ff9800;
-    outline-offset: 2px;
-  }
-
-  .menu a {
-    display: inline-block;
-    margin-right: 10px;
-    text-decoration: none;
-    color: #0d47a1;
-    padding: 4px;
-  }
-
-  .menu a:focus {
-    outline: 2px solid #ff9800;
-  }
-
-  .box {
-    border: 1px solid #ccc;
-    padding: 10px;
     margin-top: 10px;
   }
 </style>
@@ -87,16 +84,17 @@
 <body>
 <div class="container">
 
-<h1>WCAG 2.1 – 2.1.1: Keyboard Accessibility</h1>
+<h1>WCAG 2.1 – 2.1.1 Keyboard Accessibility</h1>
 
 <label for="mode">Select Demo Mode:</label>
 <select id="mode">
-  <option value="fail">❌ Fail – Mouse-only functionality</option>
-  <option value="pass">✅ Pass – Fully keyboard operable</option>
+  <option value="fail">Fail – Mouse-dependent functionality</option>
+  <option value="pass">Pass – Fully keyboard accessible</option>
 </select>
 
 <p class="note">
-Use the <strong>Tab</strong>, <strong>Enter</strong>, and <strong>Space</strong> keys to test keyboard access.
+Use only the keyboard (Tab, Shift+Tab, Enter, Space, Arrow keys, Esc)
+to test all functionality.
 </p>
 
 <div id="demo"></div>
@@ -107,81 +105,115 @@ Use the <strong>Tab</strong>, <strong>Enter</strong>, and <strong>Space</strong>
 const demo = document.getElementById("demo");
 const mode = document.getElementById("mode");
 
-function render(m) {
-  if (m === "fail") {
+function render(value) {
+
+  /* ===================== FAIL CASES ===================== */
+  if (value === "fail") {
     demo.innerHTML = `
-      <section>
-        <h2>Mouse-Only Interaction (Fail)</h2>
 
-        <div class="mouse-only" onclick="alert('Activated by mouse only')">
-          Click this box
-        </div>
+    <section>
+      <h2>Fail 1: Custom Dropdown (Mouse Only)</h2>
 
-        <p class="note">
-          ❌ This control cannot be focused or activated using the keyboard.
-        </p>
-      </section>
+      <div onclick="alert('Option selected')" style="border:1px solid #ccc; padding:10px; width:200px;">
+        Click to select option
+      </div>
 
-      <section>
-        <h2>Drag-and-Drop Only (Fail)</h2>
-        <p>Items can only be reordered using drag and drop.</p>
-        <div class="box">Item A</div>
-        <div class="box">Item B</div>
+      <p class="note">
+        Failure: Dropdown cannot be opened or operated using the keyboard.
+      </p>
+    </section>
 
-        <p class="note">
-          ❌ No keyboard alternative provided.
-        </p>
-      </section>
-    `;
-  } else {
-    demo.innerHTML = `
-      <section>
-        <h2>Keyboard-Accessible Button (Pass)</h2>
+    <section>
+      <h2>Fail 2: Hover-Only Navigation Menu</h2>
 
-        <button class="kbd-btn" onclick="alert('Activated by keyboard or mouse')">
-          Activate Action
-        </button>
+      <ul class="menu">
+        <li>Services
+          <ul class="submenu">
+            <li><a href="#">Apply</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </li>
+      </ul>
 
-        <p class="note">
-          ✅ Button is operable using Tab + Enter/Space.
-        </p>
-      </section>
+      <p class="note">
+        Failure: Submenu appears only on mouse hover.
+        Keyboard users cannot access links.
+      </p>
+    </section>
 
-      <section>
-        <h2>Keyboard-Accessible Navigation (Pass)</h2>
+    <section>
+      <h2>Fail 3: Drag-and-Drop Without Keyboard Alternative</h2>
 
-        <nav class="menu" aria-label="Main navigation">
-          <a href="#">Home</a>
-          <a href="#">Services</a>
-          <a href="#">Contact</a>
-        </nav>
+      <div class="drag-area">
+        Drag files here to upload
+      </div>
 
-        <p class="note">
-          ✅ Navigation links are reachable and operable via keyboard.
-        </p>
-      </section>
-
-      <section>
-        <h2>Drag-and-Drop with Keyboard Alternative (Pass)</h2>
-
-        <p>Use the buttons below to reorder items:</p>
-
-        <div class="box">
-          Item A
-          <button aria-label="Move Item A down">Move Down</button>
-        </div>
-
-        <div class="box">
-          Item B
-          <button aria-label="Move Item B up">Move Up</button>
-        </div>
-
-        <p class="note">
-          ✅ Keyboard users can perform the same function without drag-and-drop.
-        </p>
-      </section>
+      <p class="note">
+        Failure: No keyboard-accessible upload option is provided.
+      </p>
+    </section>
     `;
   }
+
+  /* ===================== PASS CASES ===================== */
+  else {
+    demo.innerHTML = `
+
+    <section>
+      <h2>Pass 1: Keyboard-Accessible Form Controls</h2>
+
+      <label for="role">Select Job Role:</label>
+      <select id="role">
+        <option>Developer</option>
+        <option>Analyst</option>
+        <option>Tester</option>
+      </select>
+
+      <p class="note">
+        Pass: Standard HTML select supports Tab and Arrow keys.
+      </p>
+    </section>
+
+    <section>
+      <h2>Pass 2: Keyboard-Accessible Navigation Menu</h2>
+
+      <ul class="menu">
+        <li>
+          <button aria-expanded="false" onclick="toggleMenu(this)">
+            Services
+          </button>
+          <ul class="submenu" id="submenu">
+            <li><a href="#">Apply</a></li>
+            <li><a href="#">Check Status</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <p class="note">
+        Pass: Menu opens with Enter or Space and is announced using aria-expanded.
+      </p>
+    </section>
+
+    <section>
+      <h2>Pass 3: Keyboard-Accessible File Upload</h2>
+
+      <label for="fileUpload">Upload Resume:</label>
+      <input type="file" id="fileUpload">
+
+      <p class="note">
+        Pass: File selection works using keyboard (Tab + Enter).
+      </p>
+    </section>
+    `;
+  }
+}
+
+function toggleMenu(button) {
+  const submenu = button.nextElementSibling;
+  const expanded = button.getAttribute("aria-expanded") === "true";
+
+  button.setAttribute("aria-expanded", !expanded);
+  submenu.classList.toggle("open");
 }
 
 render(mode.value);
