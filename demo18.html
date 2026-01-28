@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.11 Non-Text Contrast Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1 { margin-top: 0; }
+  label, select, button { display: block; margin-bottom: 10px; }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  /* ===== FAIL STYLES ===== */
+  .btn-low {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    border: 1px solid #e0e0e0;
+    padding: 10px 16px;
+    border-radius: 6px;
+  }
+
+  .input-low {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+
+  .icon-low {
+    width: 40px;
+    height: 40px;
+    background: #dcdcdc;
+    border-radius: 50%;
+  }
+
+  /* ===== PASS STYLES ===== */
+  .btn-high {
+    background: #0d47a1;
+    color: #ffffff;
+    border: 2px solid #0d47a1;
+    padding: 10px 16px;
+    border-radius: 6px;
+  }
+
+  .input-high {
+    border: 2px solid #000;
+    padding: 8px;
+  }
+
+  .icon-high {
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 3px solid #000;
+    border-radius: 50%;
+  }
+
+  /* ===== GRAPH ===== */
+  .bar {
+    height: 24px;
+    margin-bottom: 8px;
+  }
+
+  .bar-low {
+    background: #cfcfcf;
+  }
+
+  .bar-high {
+    background: #1a237e;
+  }
+
+  /* ===== HIGH CONTRAST MODE ===== */
+  .high-contrast {
+    background: #000;
+    color: #fff;
+  }
+
+  .high-contrast .btn-high,
+  .high-contrast .input-high {
+    border-color: #fff;
+    background: #000;
+    color: #fff;
+  }
+</style>
+</head>
+
+<body>
+<div class="container" id="root">
+
+<h1>WCAG 2.1 – 1.4.11: Non-Text Contrast</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Insufficient non-text contrast</option>
+  <option value="pass">✅ Pass – Sufficient non-text contrast</option>
+</select>
+
+<button onclick="toggleContrast()">Toggle High Contrast Mode</button>
+
+<p class="note">
+This demo focuses on contrast for user interface components and graphical objects, not text.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+const root = document.getElementById("root");
+
+function toggleContrast() {
+  root.classList.toggle("high-contrast");
+}
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>1. User Interface Components (Fail)</h2>
+        <button class="btn-low">Submit</button><br><br>
+        <input class="input-low" type="text" placeholder="Enter name">
+        <p class="note">
+          ❌ Button and input boundaries do not meet 3:1 contrast ratio.
+        </p>
+      </section>
+
+      <section>
+        <h2>2. Graphical Objects (Fail)</h2>
+        <div class="icon-low"></div>
+        <p class="note">
+          ❌ Icon shape is hard to perceive due to low contrast.
+        </p>
+      </section>
+
+      <section>
+        <h2>3. Chart Elements (Fail)</h2>
+        <div class="bar bar-low" style="width:70%"></div>
+        <div class="bar bar-low" style="width:40%"></div>
+        <p class="note">
+          ❌ Bars lack sufficient contrast from background.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>1. User Interface Components (Pass)</h2>
+        <button class="btn-high">Submit</button><br><br>
+        <input class="input-high" type="text" placeholder="Enter name">
+        <p class="note">
+          ✅ Component boundaries meet minimum 3:1 contrast ratio.
+        </p>
+      </section>
+
+      <section>
+        <h2>2. Graphical Objects (Pass)</h2>
+        <div class="icon-high"></div>
+        <p class="note">
+          ✅ Icon shape clearly visible due to sufficient contrast.
+        </p>
+      </section>
+
+      <section>
+        <h2>3. Chart Elements (Pass)</h2>
+        <div class="bar bar-high" style="width:70%"></div>
+        <div class="bar bar-high" style="width:40%"></div>
+        <p class="note">
+          ✅ Graphical elements meet non-text contrast requirements.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>
