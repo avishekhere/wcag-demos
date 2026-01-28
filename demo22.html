@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 2.1.2 No Keyboard Trap Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background: #eee;
+    cursor: pointer;
+  }
+
+  button:focus {
+    outline: 3px solid #ff9800;
+    outline-offset: 2px;
+  }
+
+  /* ===== MODAL STYLES ===== */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    background: #fff;
+    padding: 20px;
+    width: 320px;
+    border-radius: 8px;
+  }
+
+  .modal h3 { margin-top: 0; }
+  .modal input { width: 100%; padding: 6px; margin-bottom: 10px; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 2.1.2: No Keyboard Trap</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Keyboard focus trapped</option>
+  <option value="pass">✅ Pass – Focus can escape with keyboard</option>
+</select>
+
+<p class="note">
+Use <strong>Tab</strong> and <strong>Shift+Tab</strong> to navigate.  
+In Pass mode, use <strong>Esc</strong> to exit the dialog.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+let lastFocusedElement = null;
+
+function render(m) {
+  demo.innerHTML = '';
+
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Keyboard Trap Example (Fail)</h2>
+
+        <button onclick="openTrap()">Open Dialog</button>
+
+        <div class="overlay" id="trapOverlay">
+          <div class="modal">
+            <h3>Trapped Dialog</h3>
+            <input type="text" placeholder="Field 1">
+            <input type="text" placeholder="Field 2">
+            <button>Submit</button>
+          </div>
+        </div>
+
+        <p class="note">
+          ❌ Focus enters the dialog but cannot be moved out using the keyboard.
+          No instructions are provided to escape.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Accessible Dialog (Pass)</h2>
+
+        <button onclick="openAccessible()">Open Dialog</button>
+
+        <div class="overlay" id="accessibleOverlay">
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+            <h3 id="dialogTitle">Accessible Dialog</h3>
+            <p class="note">
+              Press <strong>Esc</strong> to close this dialog.
+            </p>
+            <input type="text" placeholder="Field 1">
+            <input type="text" placeholder="Field 2">
+            <button onclick="closeAccessible()">Close</button>
+          </div>
+        </div>
+
+        <p class="note">
+          ✅ Focus can be moved away using the keyboard.  
+          The non-standard exit method (Esc) is clearly communicated.
+        </p>
+      </section>
+    `;
+  }
+}
+
+/* ===== FAIL MODE ===== */
+function openTrap() {
+  document.getElementById('trapOverlay').style.display = 'flex';
+  document.getElementById('trapOverlay').querySelector('input').focus();
+}
+
+/* ===== PASS MODE ===== */
+function openAccessible() {
+  lastFocusedElement = document.activeElement;
+  const overlay = document.getElementById('accessibleOverlay');
+  overlay.style.display = 'flex';
+  overlay.querySelector('input').focus();
+
+  document.addEventListener('keydown', escHandler);
+}
+
+function closeAccessible() {
+  const overlay = document.getElementById('accessibleOverlay');
+  overlay.style.display = 'none';
+  document.removeEventListener('keydown', escHandler);
+  if (lastFocusedElement) lastFocusedElement.focus();
+}
+
+function escHandler(e) {
+  if (e.key === 'Escape') {
+    closeAccessible();
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>
