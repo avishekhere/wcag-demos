@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WCAG 2.1 / 2.2 – 2.1.4 Character Key Shortcuts Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+  }
+  .container {
+    max-width: 900px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  button {
+    padding: 8px 14px;
+    margin: 5px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    cursor: pointer;
+  }
+  input {
+    padding: 6px;
+    width: 300px;
+  }
+  .log {
+    margin-top: 12px;
+    padding: 10px;
+    background: #eef2ff;
+    border-radius: 6px;
+    min-height: 40px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 / 2.2 – 2.1.4: Character Key Shortcuts</h1>
+
+<label for="mode"><strong>Select Demo Mode:</strong></label>
+<select id="mode">
+  <option value="fail">❌ FAIL – Single-character shortcut</option>
+  <option value="pass">✅ PASS – Turn off / Remap / Focus-only</option>
+</select>
+
+<p class="note">
+Try pressing <strong>S</strong>, <strong>Ctrl + T</strong>, <strong>Alt + T</strong>,
+or <strong>Ctrl + Shift + T</strong>.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+/* ===== STATE ===== */
+let shortcutEnabled = true;
+let focusOnly = false;
+
+/* Default remapped shortcut = Ctrl + T */
+let shortcutConfig = {
+  key: "t",
+  ctrl: true,
+  alt: false,
+  shift: false
+};
+
+/* ===== GLOBAL KEY HANDLER ===== */
+document.addEventListener("keydown", function (e) {
+
+  /* -------- FAIL MODE -------- */
+  if (mode.value === "fail") {
+    if (e.key.toLowerCase() === "s") {
+      document.getElementById("log").textContent =
+        "❌ FAIL: Action triggered by single key 'S'";
+    }
+  }
+
+  /* -------- PASS MODE -------- */
+  if (mode.value === "pass") {
+
+    if (!shortcutEnabled) return;
+
+    const input = document.getElementById("focusField");
+    if (focusOnly && document.activeElement !== input) return;
+
+    const isMatch =
+      e.key.toLowerCase() === shortcutConfig.key &&
+      e.ctrlKey === shortcutConfig.ctrl &&
+      e.altKey === shortcutConfig.alt &&
+      e.shiftKey === shortcutConfig.shift;
+
+    if (isMatch) {
+      e.preventDefault(); // Prevent browser default behaviour
+      document.getElementById("log").textContent =
+        "✅ PASS: Action triggered by remapped shortcut";
+    }
+  }
+});
+
+/* ===== CONTROLS ===== */
+function toggleShortcut() {
+  shortcutEnabled = !shortcutEnabled;
+  document.getElementById("log").textContent =
+    shortcutEnabled ? "Shortcut enabled" : "Shortcut disabled";
+}
+
+function toggleFocusOnly() {
+  focusOnly = !focusOnly;
+  document.getElementById("log").textContent =
+    focusOnly
+      ? "Shortcut active only when input is focused"
+      : "Shortcut active globally";
+}
+
+/* ===== REMAP CONTROLS (UPDATED TO T) ===== */
+function remapShortcut(type) {
+  if (type === "ctrl") {
+    shortcutConfig = { key: "t", ctrl: true, alt: false, shift: false };
+    document.getElementById("log").textContent =
+      "Shortcut remapped to Ctrl + T";
+  }
+
+  if (type === "alt") {
+    shortcutConfig = { key: "t", ctrl: false, alt: true, shift: false };
+    document.getElementById("log").textContent =
+      "Shortcut remapped to Alt + T";
+  }
+
+  if (type === "ctrlShift") {
+    shortcutConfig = { key: "t", ctrl: true, alt: false, shift: true };
+    document.getElementById("log").textContent =
+      "Shortcut remapped to Ctrl + Shift + T";
+  }
+}
+
+/* ===== RENDER ===== */
+function render() {
+
+  if (mode.value === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>❌ FAIL CASE</h2>
+
+        <p>
+          Pressing the letter <strong>S</strong> anywhere on the page
+          triggers an action.
+        </p>
+
+        <div id="log" class="log">Waiting for key press…</div>
+
+        <p class="note">
+          ❌ Issues:
+          <br>• Uses single character key
+          <br>• Cannot be turned off
+          <br>• Cannot be remapped
+          <br>• Not limited to focus
+        </p>
+      </section>
+    `;
+  }
+
+  if (mode.value === "pass") {
+    demo.innerHTML = `
+      <section>
+        <h2>✅ PASS CASE</h2>
+
+        <p>
+          Shortcut uses modifier keys and can be controlled by the user.
+        </p>
+
+        <button onclick="toggleShortcut()">Turn On / Off Shortcut</button>
+        <button onclick="toggleFocusOnly()">Toggle Focus Only</button>
+
+        <br><br>
+        <strong>Remap Shortcut:</strong><br>
+        <button onclick="remapShortcut('ctrl')">Ctrl + T</button>
+        <button onclick="remapShortcut('alt')">Alt + T</button>
+        <button onclick="remapShortcut('ctrlShift')">Ctrl + Shift + T</button>
+
+        <br><br>
+
+        <input id="focusField" type="text"
+          placeholder="Focus here if Focus-Only is enabled">
+
+        <div id="log" class="log">Waiting for key press…</div>
+
+        <p class="note">
+          ✅ Meets WCAG 2.1 / 2.2 – SC 2.1.4:
+          <br>• Turn off provided
+          <br>• Remap provided
+          <br>• Focus-only supported
+        </p>
+      </section>
+    `;
+  }
+}
+
+render();
+mode.addEventListener("change", render);
+</script>
+
+</body>
+</html>
