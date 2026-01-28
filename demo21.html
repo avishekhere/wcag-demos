@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 2.1.1 Keyboard Accessibility Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1 { margin-top: 0; }
+  label, select { display: block; margin-bottom: 10px; }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background: #eee;
+    cursor: pointer;
+  }
+
+  /* ===== FAIL STYLES ===== */
+  .mouse-only {
+    background: #e0e0e0;
+    padding: 12px;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  /* ===== PASS STYLES ===== */
+  .kbd-btn {
+    background: #0d47a1;
+    color: #fff;
+    border: none;
+  }
+
+  .kbd-btn:focus {
+    outline: 3px solid #ff9800;
+    outline-offset: 2px;
+  }
+
+  .menu a {
+    display: inline-block;
+    margin-right: 10px;
+    text-decoration: none;
+    color: #0d47a1;
+    padding: 4px;
+  }
+
+  .menu a:focus {
+    outline: 2px solid #ff9800;
+  }
+
+  .box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 2.1.1: Keyboard Accessibility</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Mouse-only functionality</option>
+  <option value="pass">✅ Pass – Fully keyboard operable</option>
+</select>
+
+<p class="note">
+Use the <strong>Tab</strong>, <strong>Enter</strong>, and <strong>Space</strong> keys to test keyboard access.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Mouse-Only Interaction (Fail)</h2>
+
+        <div class="mouse-only" onclick="alert('Activated by mouse only')">
+          Click this box
+        </div>
+
+        <p class="note">
+          ❌ This control cannot be focused or activated using the keyboard.
+        </p>
+      </section>
+
+      <section>
+        <h2>Drag-and-Drop Only (Fail)</h2>
+        <p>Items can only be reordered using drag and drop.</p>
+        <div class="box">Item A</div>
+        <div class="box">Item B</div>
+
+        <p class="note">
+          ❌ No keyboard alternative provided.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Keyboard-Accessible Button (Pass)</h2>
+
+        <button class="kbd-btn" onclick="alert('Activated by keyboard or mouse')">
+          Activate Action
+        </button>
+
+        <p class="note">
+          ✅ Button is operable using Tab + Enter/Space.
+        </p>
+      </section>
+
+      <section>
+        <h2>Keyboard-Accessible Navigation (Pass)</h2>
+
+        <nav class="menu" aria-label="Main navigation">
+          <a href="#">Home</a>
+          <a href="#">Services</a>
+          <a href="#">Contact</a>
+        </nav>
+
+        <p class="note">
+          ✅ Navigation links are reachable and operable via keyboard.
+        </p>
+      </section>
+
+      <section>
+        <h2>Drag-and-Drop with Keyboard Alternative (Pass)</h2>
+
+        <p>Use the buttons below to reorder items:</p>
+
+        <div class="box">
+          Item A
+          <button aria-label="Move Item A down">Move Down</button>
+        </div>
+
+        <div class="box">
+          Item B
+          <button aria-label="Move Item B up">Move Up</button>
+        </div>
+
+        <p class="note">
+          ✅ Keyboard users can perform the same function without drag-and-drop.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>

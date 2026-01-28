@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG 2.1 – 1.4.12 Text Spacing Demo</title>
+
+<style>
+  :root {
+    --lh: 1.2;
+    --ps: 1;
+    --ls: 0;
+    --ws: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  h1 { margin-top: 0; }
+  label, select, button {
+    margin: 6px 6px 6px 0;
+  }
+
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+
+  /* ===== FAIL STYLES ===== */
+  .fixed-box {
+    height: 140px;
+    overflow: hidden; /* causes loss of content */
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  /* ===== PASS STYLES ===== */
+  .flex-box {
+    border: 1px solid #ccc;
+    padding: 1rem;
+  }
+
+  /* ===== SPACING APPLIED ===== */
+  .text-content p {
+    line-height: var(--lh);
+    margin-bottom: calc(var(--ps) * 1em);
+    letter-spacing: calc(var(--ls) * 1em);
+    word-spacing: calc(var(--ws) * 1em);
+  }
+
+  .controls button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background: #eee;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 1.4.12: Text Spacing</h1>
+
+<label for="mode">Select Demo Mode:</label>
+<select id="mode">
+  <option value="fail">❌ Fail – Content breaks with spacing</option>
+  <option value="pass">✅ Pass – Content adapts to spacing</option>
+</select>
+
+<div class="controls">
+  <button onclick="applySpacing()">Apply WCAG Spacing</button>
+  <button onclick="resetSpacing()">Reset Spacing</button>
+</div>
+
+<p class="note">
+Apply WCAG-recommended spacing to test if content loses information or functionality.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+
+function applySpacing() {
+  document.documentElement.style.setProperty('--lh', '1.5');
+  document.documentElement.style.setProperty('--ps', '2');
+  document.documentElement.style.setProperty('--ls', '0.12');
+  document.documentElement.style.setProperty('--ws', '0.16');
+}
+
+function resetSpacing() {
+  document.documentElement.style.setProperty('--lh', '1.2');
+  document.documentElement.style.setProperty('--ps', '1');
+  document.documentElement.style.setProperty('--ls', '0');
+  document.documentElement.style.setProperty('--ws', '0');
+}
+
+function render(m) {
+  if (m === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>Fixed Layout (Fail)</h2>
+        <div class="fixed-box text-content">
+          <p>
+            This paragraph is placed inside a fixed-height container.
+            When users increase line height, paragraph spacing, letter spacing
+            and word spacing, the content becomes clipped and unreadable.
+          </p>
+        </div>
+        <p class="note">
+          ❌ Content is lost when WCAG text spacing values are applied.
+        </p>
+      </section>
+    `;
+  } else {
+    demo.innerHTML = `
+      <section>
+        <h2>Flexible Layout (Pass)</h2>
+        <div class="flex-box text-content">
+          <p>
+            This paragraph uses flexible containers and relative units.
+            Users can increase line height, paragraph spacing, letter spacing,
+            and word spacing without losing any content or functionality.
+          </p>
+          <p>
+            This ensures readability for people with low vision, dyslexia,
+            and cognitive disabilities.
+          </p>
+        </div>
+        <p class="note">
+          ✅ Content remains readable and fully functional with WCAG text spacing.
+        </p>
+      </section>
+    `;
+  }
+}
+
+render(mode.value);
+mode.addEventListener("change", () => render(mode.value));
+</script>
+
+</body>
+</html>
