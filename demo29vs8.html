@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WCAG Demo – Meaningful Sequence vs Focus Order</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+  }
+
+  .container {
+    max-width: 1000px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  section {
+    border-top: 2px solid #ddd;
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .box {
+    border: 1px solid #aaa;
+    padding: 15px;
+    background: #fafafa;
+  }
+
+  .box h3 {
+    margin-top: 0;
+  }
+
+  button, input, a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 10px;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG Demo: Meaningful Sequence vs Focus Order</h1>
+
+<p>
+This page demonstrates the <strong>difference between content reading order</strong>
+(WCAG 1.3.2) and <strong>keyboard focus order</strong> (WCAG 2.4.3).
+</p>
+
+<!-- ====================================================== -->
+<section>
+<h2>1️⃣ WCAG 2.1 – 1.3.2 Meaningful Sequence</h2>
+
+<p>
+This criterion checks whether the <strong>content makes sense when read linearly</strong>
+(e.g., by a screen reader or when CSS is disabled).
+</p>
+
+<div class="layout">
+
+  <div class="box">
+    <h3>❌ Fail Example (Visual Order ≠ DOM Order)</h3>
+
+    <p><strong>Visual order:</strong></p>
+    <ol>
+      <li>Step 1: Enter Name</li>
+      <li>Step 2: Enter Email</li>
+      <li>Step 3: Submit</li>
+    </ol>
+
+    <p class="note">
+      But the DOM order below is incorrect.
+    </p>
+  </div>
+
+  <div class="box">
+    <!-- DOM order is wrong -->
+    <button>Submit</button>
+    <label>Email: <input type="email"></label>
+    <label>Name: <input type="text"></label>
+
+    <p class="note">
+      ❌ Screen readers will read:
+      <br>Submit → Email → Name
+    </p>
+  </div>
+
+</div>
+
+<p class="note">
+❌ Fails WCAG 1.3.2 because the meaning changes when read in sequence.
+</p>
+</section>
+
+<!-- ====================================================== -->
+<section>
+<h2>✅ WCAG 2.1 – 1.3.2 Pass Example</h2>
+
+<div class="box">
+  <!-- Correct DOM order -->
+  <label>Name: <input type="text"></label><br>
+  <label>Email: <input type="email"></label><br>
+  <button>Submit</button>
+
+  <p class="note">
+    ✅ Reading order is logical even without CSS.
+  </p>
+</div>
+</section>
+
+<!-- ====================================================== -->
+<section>
+<h2>2️⃣ WCAG 2.1 – 2.4.3 Focus Order</h2>
+
+<p>
+This criterion checks whether <strong>keyboard focus moves in a meaningful order</strong>
+when users press the <kbd>Tab</kbd> key.
+</p>
+
+<div class="layout">
+
+  <div class="box">
+    <h3>❌ Fail Example (Incorrect Tab Order)</h3>
+
+    <p>
+      Press <strong>Tab</strong> and observe the focus order.
+    </p>
+
+    <input type="text" placeholder="Field 1" tabindex="3">
+    <input type="text" placeholder="Field 2" tabindex="1">
+    <button tabindex="2">Continue</button>
+
+    <p class="note">
+      ❌ Focus jumps unpredictably:
+      <br>Field 2 → Button → Field 1
+    </p>
+  </div>
+
+  <div class="box">
+    <h3>✅ Pass Example (Logical Tab Order)</h3>
+
+    <p>
+      Press <strong>Tab</strong> again.
+    </p>
+
+    <input type="text" placeholder="Field 1"><br>
+    <input type="text" placeholder="Field 2"><br>
+    <button>Continue</button>
+
+    <p class="note">
+      ✅ Focus follows content sequence.
+    </p>
+  </div>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<section>
+<h2>🔍 Key Difference Summary</h2>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Criterion</th>
+    <th>Checks</th>
+    <th>Example Failure</th>
+  </tr>
+  <tr>
+    <td>1.3.2 Meaningful Sequence</td>
+    <td>Reading order in DOM</td>
+    <td>Screen reader reads steps out of order</td>
+  </tr>
+  <tr>
+    <td>2.4.3 Focus Order</td>
+    <td>Keyboard tab navigation</td>
+    <td>Tab key jumps illogically</td>
+  </tr>
+</table>
+
+</section>
+
+</div>
+</body>
+</html>
