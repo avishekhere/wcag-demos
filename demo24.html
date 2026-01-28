@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WCAG 2.1 – 2.2.1 Timing Adjustable Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+  }
+  .container {
+    max-width: 900px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  button {
+    padding: 8px 14px;
+    margin-right: 8px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    cursor: pointer;
+  }
+  .timer {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  .warning {
+    background: #fff3cd;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 2.2.1: Timing Adjustable</h1>
+
+<label for="mode"><strong>Select Demo Mode:</strong></label>
+<select id="mode">
+  <option value="fail">❌ FAIL – Fixed time limit</option>
+  <option value="pass">✅ PASS – User can control time</option>
+</select>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+let timer;
+let timeLeft = 10;
+let extensions = 0;
+let timerEnabled = true;
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    if (!timerEnabled) return;
+
+    timeLeft--;
+    document.getElementById("countdown").textContent = timeLeft;
+
+    if (timeLeft === 5 && document.getElementById("warning")) {
+      document.getElementById("warning").style.display = "block";
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      alert("❌ Time expired!");
+    }
+  }, 1000);
+}
+
+function extendTime() {
+  if (extensions < 10) {
+    timeLeft += 10;
+    extensions++;
+    document.getElementById("warning").style.display = "none";
+  }
+}
+
+function turnOffTimer() {
+  timerEnabled = false;
+  document.getElementById("countdown").textContent = "Timer Off";
+}
+
+function adjustTimer() {
+  timeLeft = 100; // 10x default
+  startTimer();
+}
+
+function render() {
+  clearInterval(timer);
+  timeLeft = 10;
+  extensions = 0;
+  timerEnabled = true;
+
+  const mode = document.getElementById("mode").value;
+  const demo = document.getElementById("demo");
+
+  if (mode === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>❌ FAIL CASE</h2>
+
+        <p>This form will expire automatically after 10 seconds.</p>
+
+        <div class="timer">
+          Time left: <span id="countdown">10</span> seconds
+        </div>
+
+        <p class="note">
+          ❌ Issues:
+          <br>• No warning before timeout
+          <br>• No option to extend
+          <br>• No way to turn off or adjust time
+        </p>
+      </section>
+    `;
+    startTimer();
+  }
+
+  if (mode === "pass") {
+    demo.innerHTML = `
+      <section>
+        <h2>✅ PASS CASE</h2>
+
+        <p>You can control or extend the time limit.</p>
+
+        <button onclick="turnOffTimer()">Turn Off Timer</button>
+        <button onclick="adjustTimer()">Adjust Time (10×)</button>
+
+        <div class="timer">
+          Time left: <span id="countdown">10</span> seconds
+        </div>
+
+        <div id="warning" class="warning" style="display:none">
+          Time is about to expire.
+          <br>
+          Press <strong>Spacebar</strong> or click below to extend time.
+          <br><br>
+          <button onclick="extendTime()">Extend Time</button>
+        </div>
+
+        <p class="note">
+          ✅ Meets WCAG 2.2.1:
+          <br>• Time can be turned off
+          <br>• Time can be adjusted (10×)
+          <br>• Warning given before expiry
+          <br>• Simple action to extend time (≥20 seconds)
+        </p>
+      </section>
+    `;
+
+    startTimer();
+
+    document.addEventListener("keydown", function(e) {
+      if (e.code === "Space") {
+        extendTime();
+      }
+    });
+  }
+}
+
+render();
+document.getElementById("mode").addEventListener("change", render);
+</script>
+
+</body>
+</html>

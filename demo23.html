@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WCAG 2.1.4 – Character Key Shortcuts Demo</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 30px;
+  }
+  .container {
+    max-width: 900px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  button {
+    padding: 8px 14px;
+    margin-right: 8px;
+    border-radius: 6px;
+    border: 1px solid #999;
+    cursor: pointer;
+  }
+  .log {
+    margin-top: 12px;
+    padding: 10px;
+    background: #eef2ff;
+    border-radius: 6px;
+    min-height: 40px;
+  }
+  .note {
+    font-size: 13px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WCAG 2.1 – 2.1.4: Character Key Shortcuts</h1>
+
+<label for="mode"><strong>Select Demo Mode:</strong></label>
+<select id="mode">
+  <option value="fail">❌ FAIL – Single-character shortcut</option>
+  <option value="pass">✅ PASS – Controlled shortcut</option>
+</select>
+
+<p class="note">
+Try pressing <strong>S</strong> or <strong>Ctrl + S</strong> on your keyboard.
+</p>
+
+<div id="demo"></div>
+
+</div>
+
+<script>
+const demo = document.getElementById("demo");
+const mode = document.getElementById("mode");
+let shortcutEnabled = true;
+let focusOnly = false;
+
+/* ===== GLOBAL KEY HANDLER ===== */
+document.addEventListener("keydown", function (e) {
+
+  /* -------- FAIL CASE -------- */
+  if (mode.value === "fail") {
+    if (e.key.toLowerCase() === "s") {
+      document.getElementById("log").textContent =
+        "❌ FAIL: Action triggered by single key 'S'";
+    }
+  }
+
+  /* -------- PASS CASE -------- */
+  if (mode.value === "pass") {
+
+    if (!shortcutEnabled) return;
+
+    const input = document.getElementById("focusField");
+
+    if (focusOnly && document.activeElement !== input) return;
+
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+      e.preventDefault(); // ✅ Prevent browser Save dialog
+      document.getElementById("log").textContent =
+        "✅ PASS: Action triggered by Ctrl + S";
+    }
+  }
+});
+
+/* ===== UI CONTROLS ===== */
+function toggleShortcut() {
+  shortcutEnabled = !shortcutEnabled;
+  document.getElementById("log").textContent =
+    shortcutEnabled ? "Shortcut enabled" : "Shortcut disabled";
+}
+
+function toggleFocusOnly() {
+  focusOnly = !focusOnly;
+  document.getElementById("log").textContent =
+    focusOnly ? "Shortcut active only on focus" : "Shortcut active globally";
+}
+
+/* ===== RENDER ===== */
+function render() {
+
+  if (mode.value === "fail") {
+    demo.innerHTML = `
+      <section>
+        <h2>❌ FAIL CASE</h2>
+
+        <p>
+          Pressing the letter <strong>S</strong> anywhere on the page
+          triggers an action.
+        </p>
+
+        <div id="log" class="log">Waiting for key press…</div>
+
+        <p class="note">
+          ❌ Issues:
+          <br>• Uses single character key
+          <br>• Cannot be turned off
+          <br>• Cannot be remapped
+          <br>• Not limited to focus
+        </p>
+      </section>
+    `;
+  }
+
+  if (mode.value === "pass") {
+    demo.innerHTML = `
+      <section>
+        <h2>✅ PASS CASE</h2>
+
+        <p>
+          Shortcut uses <strong>Ctrl + S</strong> and can be controlled by the user.
+        </p>
+
+        <button onclick="toggleShortcut()">Turn On / Off Shortcut</button>
+        <button onclick="toggleFocusOnly()">Toggle Focus Only</button>
+
+        <br><br>
+
+        <input id="focusField" type="text"
+          placeholder="Focus here if Focus-Only is enabled">
+
+        <div id="log" class="log">Waiting for key press…</div>
+
+        <p class="note">
+          ✅ Meets WCAG 2.1.4:
+          <br>• Modifier key used
+          <br>• Shortcut can be disabled
+          <br>• Can be active only on focus
+        </p>
+      </section>
+    `;
+  }
+}
+
+render();
+mode.addEventListener("change", render);
+</script>
+
+</body>
+</html>
