@@ -98,7 +98,7 @@ function setLabels(mode) {
 
     // Page 2 inconsistent labels
     label2.textContent = "Find:";
-    search2.setAttribute('aria-label', 'Find');
+    search2.setAttribute('aria-label', 'Search');
     btn2.textContent = "Go";
     btn2.setAttribute('aria-label', 'Go Search');
     result2.textContent = "❌ FAIL – Labels differ from Page 1 (aria-label and visible text)";
@@ -112,3 +112,4 @@ labelMode.dispatchEvent(new Event('change'));
 </script>
 </body>
 </html>
+
